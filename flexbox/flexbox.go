@@ -147,7 +147,7 @@ type PaddingTop struct {
 	Value float32
 }
 
-type PaddingTopPercentage struct {
+type PaddingTopPercent struct {
 	Value float32
 }
 
@@ -155,7 +155,7 @@ type PaddingRight struct {
 	Value float32
 }
 
-type PaddingRightPercentage struct {
+type PaddingRightPercent struct {
 	Value float32
 }
 
@@ -163,7 +163,7 @@ type PaddingBottom struct {
 	Value float32
 }
 
-type PaddingBottomPercentage struct {
+type PaddingBottomPercent struct {
 	Value float32
 }
 
@@ -171,7 +171,7 @@ type PaddingLeft struct {
 	Value float32
 }
 
-type PaddingLeftPercentage struct {
+type PaddingLeftPercent struct {
 	Value float32
 }
 
@@ -179,7 +179,7 @@ type PaddingUniform struct {
 	Value float32
 }
 
-type PaddingUniformPercentage struct {
+type PaddingUniformPercent struct {
 	Value float32
 }
 
