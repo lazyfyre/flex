@@ -335,23 +335,23 @@ func Flexbox(props ...any) *flex.Node {
 			node.StyleSetMarginPercent(flex.EdgeAll, p.Value)
 		case PaddingTop:
 			node.StyleSetPadding(flex.EdgeTop, p.Value)
-		case PaddingTopPercentage:
+		case PaddingTopPercent:
 			node.StyleSetPaddingPercent(flex.EdgeTop, p.Value)
 		case PaddingRight:
 			node.StyleSetPadding(flex.EdgeRight, p.Value)
-		case PaddingRightPercentage:
+		case PaddingRightPercent:
 			node.StyleSetPaddingPercent(flex.EdgeRight, p.Value)
 		case PaddingBottom:
 			node.StyleSetPadding(flex.EdgeBottom, p.Value)
-		case PaddingBottomPercentage:
+		case PaddingBottomPercent:
 			node.StyleSetPaddingPercent(flex.EdgeBottom, p.Value)
 		case PaddingLeft:
 			node.StyleSetPadding(flex.EdgeLeft, p.Value)
-		case PaddingLeftPercentage:
+		case PaddingLeftPercent:
 			node.StyleSetPaddingPercent(flex.EdgeLeft, p.Value)
 		case PaddingUniform:
 			node.StyleSetPadding(flex.EdgeAll, p.Value)
-		case PaddingUniformPercentage:
+		case PaddingUniformPercent:
 			node.StyleSetPaddingPercent(flex.EdgeAll, p.Value)
 		case BorderLeftWidth:
 			node.StyleSetBorder(flex.EdgeLeft, p.Value)
