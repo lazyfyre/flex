@@ -254,7 +254,7 @@ type LeftPercent struct {
 }
 
 type Children struct {
-	Value []*flex.Node
+	Value [][]Prop
 }
 
 func Flexbox(props ...Prop) *flex.Node {
@@ -395,7 +395,7 @@ func Flexbox(props ...Prop) *flex.Node {
 
 		case Children:
 			for i, child := range p.Value {
-				node.InsertChild(child, i)
+				node.InsertChild(Flexbox(child), i)
 			}
 		}
 	}
