@@ -258,7 +258,7 @@ type Children struct {
 	Value []Component
 }
 
-func Flexbox(props ...Prop) *flex.Node {
+func Flexbox(props Component) *flex.Node {
 	config := flex.NewConfig()
 	node := flex.NewNodeWithConfig(config)
 	node.Props = props
@@ -396,7 +396,7 @@ func Flexbox(props ...Prop) *flex.Node {
 
 		case Children:
 			for i, child := range p.Value {
-				node.InsertChild(Flexbox(child...), i)
+				node.InsertChild(Flexbox(child), i)
 			}
 		}
 	}
@@ -426,7 +426,7 @@ type LayoutInterface struct {
 	Props         []Prop
 }
 
-func Layout(node *flex.Node, props []Prop) LayoutInterface {
+func Layout(node *flex.Node, props Component) LayoutInterface {
 	childrenLayouts := make([]LayoutInterface, len(node.Children))
 	for i, child := range node.Children {
 		childrenLayouts[i] = Layout(child, node.Props)
@@ -456,8 +456,8 @@ func Layout(node *flex.Node, props []Prop) LayoutInterface {
 	}
 }
 
-func NewFlexbox(width, height float32, props ...Prop) LayoutInterface {
-	root := Flexbox(props...)
+func NewFlexbox(width, height float32, props Component) LayoutInterface {
+	root := Flexbox(props)
 	if width == -1 {
 		width = flex.NAN
 	}
