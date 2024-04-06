@@ -2,6 +2,8 @@ package flexbox
 
 import "github.com/lazyfyre/flex"
 
+type Prop = any
+
 type Id struct {
 	Value string
 }
@@ -255,9 +257,10 @@ type Children struct {
 	Value []*flex.Node
 }
 
-func Flexbox(props ...any) *flex.Node {
+func Flexbox(props ...Prop) *flex.Node {
 	config := flex.NewConfig()
 	node := flex.NewNodeWithConfig(config)
+	node.Props = props
 	for _, prop := range props {
 		switch p := prop.(type) {
 		case AlignContent:
@@ -419,12 +422,13 @@ type LayoutInterface struct {
 	MarginBottom  float32
 	MarginLeft    float32
 	Children      []LayoutInterface
+	Props         []Prop
 }
 
-func Layout(node *flex.Node) LayoutInterface {
+func Layout(node *flex.Node, props []Prop) LayoutInterface {
 	childrenLayouts := make([]LayoutInterface, len(node.Children))
 	for i, child := range node.Children {
-		childrenLayouts[i] = Layout(child)
+		childrenLayouts[i] = Layout(child, node.Props)
 	}
 
 	return LayoutInterface{
@@ -447,10 +451,11 @@ func Layout(node *flex.Node) LayoutInterface {
 		MarginBottom:  node.LayoutGetMargin(flex.EdgeBottom),
 		MarginLeft:    node.LayoutGetMargin(flex.EdgeLeft),
 		Children:      childrenLayouts,
+		Props:         props,
 	}
 }
 
-func NewFlexbox(width, height float32, props ...any) LayoutInterface {
+func NewFlexbox(width, height float32, props ...Prop) LayoutInterface {
 	root := Flexbox(props...)
 	if width == -1 {
 		width = flex.NAN
@@ -459,5 +464,5 @@ func NewFlexbox(width, height float32, props ...any) LayoutInterface {
 		height = flex.NAN
 	}
 	flex.CalculateLayout(root, width, height, flex.DirectionLTR)
-	return Layout(root)
+	return Layout(root, props)
 }

@@ -106,6 +106,7 @@ type Node struct {
 	NodeType     NodeType
 
 	resolvedDimensions [2]*Value
+	Props              []any
 }
 
 var (
@@ -1376,85 +1377,86 @@ func zeroOutLayoutRecursivly(node *Node) {
 // described in the W3C YG documentation: https://www.w3.org/TR/YG3-flexbox/.
 //
 // Limitations of this algorithm, compared to the full standard:
-//  * Display property is always assumed to be 'flex' except for Text nodes,
-//  which
-//    are assumed to be 'inline-flex'.
-//  * The 'zIndex' property (or any form of z ordering) is not supported. Nodes
-//  are
-//    stacked in document order.
-//  * The 'order' property is not supported. The order of flex items is always
-//  defined
-//    by document order.
-//  * The 'visibility' property is always assumed to be 'visible'. Values of
-//  'collapse'
-//    and 'hidden' are not supported.
-//  * There is no support for forced breaks.
-//  * It does not support vertical inline directions (top-to-bottom or
-//  bottom-to-top text).
+//   - Display property is always assumed to be 'flex' except for Text nodes,
+//     which
+//     are assumed to be 'inline-flex'.
+//   - The 'zIndex' property (or any form of z ordering) is not supported. Nodes
+//     are
+//     stacked in document order.
+//   - The 'order' property is not supported. The order of flex items is always
+//     defined
+//     by document order.
+//   - The 'visibility' property is always assumed to be 'visible'. Values of
+//     'collapse'
+//     and 'hidden' are not supported.
+//   - There is no support for forced breaks.
+//   - It does not support vertical inline directions (top-to-bottom or
+//     bottom-to-top text).
 //
 // Deviations from standard:
-//  * Section 4.5 of the spec indicates that all flex items have a default
-//  minimum
-//    main size. For text blocks, for example, this is the width of the widest
-//    word.
-//    Calculating the minimum width is expensive, so we forego it and assume a
-//    default
-//    minimum main size of 0.
-//  * Min/Max sizes in the main axis are not honored when resolving flexible
-//  lengths.
-//  * The spec indicates that the default value for 'flexDirection' is 'row',
-//  but
-//    the algorithm below assumes a default of 'column'.
+//   - Section 4.5 of the spec indicates that all flex items have a default
+//     minimum
+//     main size. For text blocks, for example, this is the width of the widest
+//     word.
+//     Calculating the minimum width is expensive, so we forego it and assume a
+//     default
+//     minimum main size of 0.
+//   - Min/Max sizes in the main axis are not honored when resolving flexible
+//     lengths.
+//   - The spec indicates that the default value for 'flexDirection' is 'row',
+//     but
+//     the algorithm below assumes a default of 'column'.
 //
 // Input parameters:
-//    - node: current node to be sized and layed out
-//    - availableWidth & availableHeight: available size to be used for sizing
-//    the node
-//      or Undefined if the size is not available; interpretation depends on
-//      layout
-//      flags
-//    - parentDirection: the inline (text) direction within the parent
-//    (left-to-right or
-//      right-to-left)
-//    - widthMeasureMode: indicates the sizing rules for the width (see below
-//    for explanation)
-//    - heightMeasureMode: indicates the sizing rules for the height (see below
-//    for explanation)
-//    - performLayout: specifies whether the caller is interested in just the
-//    dimensions
-//      of the node or it requires the entire node and its subtree to be layed
-//      out
-//      (with final positions)
+//   - node: current node to be sized and layed out
+//   - availableWidth & availableHeight: available size to be used for sizing
+//     the node
+//     or Undefined if the size is not available; interpretation depends on
+//     layout
+//     flags
+//   - parentDirection: the inline (text) direction within the parent
+//     (left-to-right or
+//     right-to-left)
+//   - widthMeasureMode: indicates the sizing rules for the width (see below
+//     for explanation)
+//   - heightMeasureMode: indicates the sizing rules for the height (see below
+//     for explanation)
+//   - performLayout: specifies whether the caller is interested in just the
+//     dimensions
+//     of the node or it requires the entire node and its subtree to be layed
+//     out
+//     (with final positions)
 //
 // Details:
-//    This routine is called recursively to lay out subtrees of flexbox
-//    elements. It uses the
-//    information in node.style, which is treated as a read-only input. It is
-//    responsible for
-//    setting the layout.direction and layout.measuredDimensions fields for the
-//    input node as well
-//    as the layout.position and layout.lineIndex fields for its child nodes.
-//    The
-//    layout.measuredDimensions field includes any border or padding for the
-//    node but does
-//    not include margins.
 //
-//    The spec describes four different layout modes: "fill available", "max
-//    content", "min
-//    content",
-//    and "fit content". Of these, we don't use "min content" because we don't
-//    support default
-//    minimum main sizes (see above for details). Each of our measure modes maps
-//    to a layout mode
-//    from the spec (https://www.w3.org/TR/YG3-sizing/#terms):
-//      - YGMeasureModeUndefined: max content
-//      - YGMeasureModeExactly: fill available
-//      - YGMeasureModeAtMost: fit content
+//	This routine is called recursively to lay out subtrees of flexbox
+//	elements. It uses the
+//	information in node.style, which is treated as a read-only input. It is
+//	responsible for
+//	setting the layout.direction and layout.measuredDimensions fields for the
+//	input node as well
+//	as the layout.position and layout.lineIndex fields for its child nodes.
+//	The
+//	layout.measuredDimensions field includes any border or padding for the
+//	node but does
+//	not include margins.
 //
-//    When calling nodelayoutImpl and YGLayoutNodeInternal, if the caller passes
-//    an available size of
-//    undefined then it must also pass a measure mode of YGMeasureModeUndefined
-//    in that dimension.
+//	The spec describes four different layout modes: "fill available", "max
+//	content", "min
+//	content",
+//	and "fit content". Of these, we don't use "min content" because we don't
+//	support default
+//	minimum main sizes (see above for details). Each of our measure modes maps
+//	to a layout mode
+//	from the spec (https://www.w3.org/TR/YG3-sizing/#terms):
+//	  - YGMeasureModeUndefined: max content
+//	  - YGMeasureModeExactly: fill available
+//	  - YGMeasureModeAtMost: fit content
+//
+//	When calling nodelayoutImpl and YGLayoutNodeInternal, if the caller passes
+//	an available size of
+//	undefined then it must also pass a measure mode of YGMeasureModeUndefined
+//	in that dimension.
 func nodelayoutImpl(node *Node, availableWidth float32, availableHeight float32,
 	parentDirection Direction, widthMeasureMode MeasureMode,
 	heightMeasureMode MeasureMode, parentWidth float32, parentHeight float32,
@@ -2722,8 +2724,9 @@ func nodeCanUseCachedMeasurement(widthMode MeasureMode, width float32, heightMod
 // whether the layout request is redundant and can be skipped.
 //
 // Parameters:
-//  Input parameters are the same as YGNodelayoutImpl (see above)
-//  Return parameter is true if layout was performed, false if skipped
+//
+//	Input parameters are the same as YGNodelayoutImpl (see above)
+//	Return parameter is true if layout was performed, false if skipped
 func layoutNodeInternal(node *Node, availableWidth float32, availableHeight float32,
 	parentDirection Direction, widthMeasureMode MeasureMode,
 	heightMeasureMode MeasureMode, parentWidth float32, parentHeight float32,
