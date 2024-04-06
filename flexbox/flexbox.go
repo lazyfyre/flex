@@ -426,10 +426,10 @@ type LayoutInterface struct {
 	Props         []Prop
 }
 
-func Layout(node *flex.Node, props Component) LayoutInterface {
+func Layout(node *flex.Node) LayoutInterface {
 	childrenLayouts := make([]LayoutInterface, len(node.Children))
 	for i, child := range node.Children {
-		childrenLayouts[i] = Layout(child, node.Props)
+		childrenLayouts[i] = Layout(child)
 	}
 
 	return LayoutInterface{
@@ -452,7 +452,7 @@ func Layout(node *flex.Node, props Component) LayoutInterface {
 		MarginBottom:  node.LayoutGetMargin(flex.EdgeBottom),
 		MarginLeft:    node.LayoutGetMargin(flex.EdgeLeft),
 		Children:      childrenLayouts,
-		Props:         props,
+		Props:         node.Props,
 	}
 }
 
@@ -465,5 +465,5 @@ func NewFlexbox(width, height float32, props Component) LayoutInterface {
 		height = flex.NAN
 	}
 	flex.CalculateLayout(root, width, height, flex.DirectionLTR)
-	return Layout(root, props)
+	return Layout(root)
 }
