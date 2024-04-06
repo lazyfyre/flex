@@ -3,6 +3,7 @@ package flexbox
 import "github.com/lazyfyre/flex"
 
 type Prop = any
+type Component = []Prop
 
 type Id struct {
 	Value string
@@ -254,7 +255,7 @@ type LeftPercent struct {
 }
 
 type Children struct {
-	Value [][]Prop
+	Value []Component
 }
 
 func Flexbox(props ...Prop) *flex.Node {
