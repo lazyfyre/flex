@@ -396,7 +396,7 @@ func Flexbox(props ...Prop) *flex.Node {
 
 		case Children:
 			for i, child := range p.Value {
-				node.InsertChild(Flexbox(child), i)
+				node.InsertChild(Flexbox(child...), i)
 			}
 		}
 	}
