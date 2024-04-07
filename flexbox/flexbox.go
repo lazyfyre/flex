@@ -186,23 +186,23 @@ type PaddingUniformPercent struct {
 	Value float32
 }
 
-type BorderLeftWidth struct {
+type BorderWidthLeft struct {
 	Value float32
 }
 
-type BorderRightWidth struct {
+type BorderWidthRight struct {
 	Value float32
 }
 
-type BorderTopWidth struct {
+type BorderWidthTop struct {
 	Value float32
 }
 
-type BorderBottomWidth struct {
+type BorderWidthBottom struct {
 	Value float32
 }
 
-type BorderWidth struct {
+type BorderWidthUniform struct {
 	Value float32
 }
 
@@ -357,15 +357,15 @@ func Flexbox(props Component) *flex.Node {
 			node.StyleSetPadding(flex.EdgeAll, p.Value)
 		case PaddingUniformPercent:
 			node.StyleSetPaddingPercent(flex.EdgeAll, p.Value)
-		case BorderLeftWidth:
+		case BorderWidthLeft:
 			node.StyleSetBorder(flex.EdgeLeft, p.Value)
-		case BorderRightWidth:
+		case BorderWidthRight:
 			node.StyleSetBorder(flex.EdgeRight, p.Value)
-		case BorderTopWidth:
+		case BorderWidthTop:
 			node.StyleSetBorder(flex.EdgeTop, p.Value)
-		case BorderBottomWidth:
+		case BorderWidthBottom:
 			node.StyleSetBorder(flex.EdgeBottom, p.Value)
-		case BorderWidth:
+		case BorderWidthUniform:
 			node.StyleSetBorder(flex.EdgeAll, p.Value)
 		case AspectRatio:
 			node.StyleSetAspectRatio(p.Value)
