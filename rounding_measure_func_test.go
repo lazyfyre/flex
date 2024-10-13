@@ -2,19 +2,37 @@ package flex
 
 import "testing"
 
-func _measureFloor(node *Node, width float32, widthMode MeasureMode, height float32, heightMode MeasureMode) Size {
+func _measureFloor(
+	node *Node,
+	width float64,
+	widthMode MeasureMode,
+	height float64,
+	heightMode MeasureMode,
+) Size {
 	return Size{
 		Width: 10.2, Height: 10.2,
 	}
 }
 
-func _measureCeil(node *Node, width float32, widthMode MeasureMode, height float32, heightMode MeasureMode) Size {
+func _measureCeil(
+	node *Node,
+	width float64,
+	widthMode MeasureMode,
+	height float64,
+	heightMode MeasureMode,
+) Size {
 	return Size{
 		Width: 10.5, Height: 10.5,
 	}
 }
 
-func _measureFractial(node *Node, width float32, widthMode MeasureMode, height float32, heightMode MeasureMode) Size {
+func _measureFractial(
+	node *Node,
+	width float64,
+	widthMode MeasureMode,
+	height float64,
+	heightMode MeasureMode,
+) Size {
 	return Size{
 		Width: 0.5, Height: 0.5,
 	}
@@ -56,7 +74,7 @@ func TestRounding_feature_with_custom_measure_func_floor(t *testing.T) {
 	assertFloatEqual(t, 10.25, rootChild0.LayoutGetWidth())
 	assertFloatEqual(t, 10.25, rootChild0.LayoutGetHeight())
 
-	config.SetPointScaleFactor(float32(1) / float32(3))
+	config.SetPointScaleFactor(float64(1) / float64(3))
 
 	CalculateLayout(root, Undefined, Undefined, DirectionRTL)
 

@@ -7,13 +7,13 @@ var (
 
 // Size describes size
 type Size struct {
-	Width  float32
-	Height float32
+	Width  float64
+	Height float64
 }
 
 // Value describes value
 type Value struct {
-	Value float32
+	Value float64
 	Unit  Unit
 }
 
@@ -25,10 +25,10 @@ var (
 )
 
 // MeasureFunc describes function for measuring
-type MeasureFunc func(node *Node, width float32, widthMode MeasureMode, height float32, heightMode MeasureMode) Size
+type MeasureFunc func(node *Node, width float64, widthMode MeasureMode, height float64, heightMode MeasureMode) Size
 
 // BaselineFunc describes function for baseline
-type BaselineFunc func(node *Node, width float32, height float32) float32
+type BaselineFunc func(node *Node, width float64, height float64) float64
 
 // PrintFunc defines function for printing
 type PrintFunc func(node *Node)

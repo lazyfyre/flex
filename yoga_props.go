@@ -56,7 +56,7 @@ YG_NODE_LAYOUT_RESOLVED_PROPERTY_IMPL(float, Padding, padding);
 */
 
 // StyleSetWidth sets width
-func (node *Node) StyleSetWidth(width float32) {
+func (node *Node) StyleSetWidth(width float64) {
 	dim := &node.Style.Dimensions[DimensionWidth]
 	if dim.Value != width || dim.Unit != UnitPoint {
 		dim.Value = width
@@ -69,7 +69,7 @@ func (node *Node) StyleSetWidth(width float32) {
 }
 
 // StyleSetWidthPercent sets width percent
-func (node *Node) StyleSetWidthPercent(width float32) {
+func (node *Node) StyleSetWidthPercent(width float64) {
 	dim := &node.Style.Dimensions[DimensionWidth]
 	if dim.Value != width || dim.Unit != UnitPercent {
 		dim.Value = width
@@ -97,7 +97,7 @@ func (node *Node) StyleGetWidth() Value {
 }
 
 // StyleSetHeight sets height
-func (node *Node) StyleSetHeight(height float32) {
+func (node *Node) StyleSetHeight(height float64) {
 	dim := &node.Style.Dimensions[DimensionHeight]
 	if dim.Value != height || dim.Unit != UnitPoint {
 		dim.Value = height
@@ -110,7 +110,7 @@ func (node *Node) StyleSetHeight(height float32) {
 }
 
 // StyleSetHeightPercent sets height percent
-func (node *Node) StyleSetHeightPercent(height float32) {
+func (node *Node) StyleSetHeightPercent(height float64) {
 	dim := &node.Style.Dimensions[DimensionHeight]
 	if dim.Value != height || dim.Unit != UnitPercent {
 		dim.Value = height
@@ -146,7 +146,7 @@ func (node *Node) StyleSetPositionType(positionType PositionType) {
 }
 
 // StyleSetPosition sets position
-func (node *Node) StyleSetPosition(edge Edge, position float32) {
+func (node *Node) StyleSetPosition(edge Edge, position float64) {
 	pos := &node.Style.Position[edge]
 	if pos.Value != position || pos.Unit != UnitPoint {
 		pos.Value = position
@@ -159,7 +159,7 @@ func (node *Node) StyleSetPosition(edge Edge, position float32) {
 }
 
 // StyleSetPositionPercent sets position percent
-func (node *Node) StyleSetPositionPercent(edge Edge, position float32) {
+func (node *Node) StyleSetPositionPercent(edge Edge, position float64) {
 	pos := &node.Style.Position[edge]
 	if pos.Value != position || pos.Unit != UnitPercent {
 		pos.Value = position
@@ -249,7 +249,7 @@ func (node *Node) StyleSetDisplay(display Display) {
 }
 
 // StyleSetFlex sets flex
-func (node *Node) StyleSetFlex(flex float32) {
+func (node *Node) StyleSetFlex(flex float64) {
 	if node.Style.Flex != flex {
 		node.Style.Flex = flex
 		nodeMarkDirtyInternal(node)
@@ -257,7 +257,7 @@ func (node *Node) StyleSetFlex(flex float32) {
 }
 
 // StyleSetFlexGrow sets flex grow
-func (node *Node) StyleSetFlexGrow(flexGrow float32) {
+func (node *Node) StyleSetFlexGrow(flexGrow float64) {
 	if node.Style.FlexGrow != flexGrow {
 		node.Style.FlexGrow = flexGrow
 		nodeMarkDirtyInternal(node)
@@ -265,7 +265,7 @@ func (node *Node) StyleSetFlexGrow(flexGrow float32) {
 }
 
 // StyleSetFlexShrink sets flex shrink
-func (node *Node) StyleSetFlexShrink(flexShrink float32) {
+func (node *Node) StyleSetFlexShrink(flexShrink float64) {
 	if node.Style.FlexShrink != flexShrink {
 		node.Style.FlexShrink = flexShrink
 		nodeMarkDirtyInternal(node)
@@ -273,7 +273,7 @@ func (node *Node) StyleSetFlexShrink(flexShrink float32) {
 }
 
 // StyleSetFlexBasis sets flex basis
-func (node *Node) StyleSetFlexBasis(flexBasis float32) {
+func (node *Node) StyleSetFlexBasis(flexBasis float64) {
 	if node.Style.FlexBasis.Value != flexBasis ||
 		node.Style.FlexBasis.Unit != UnitPoint {
 		node.Style.FlexBasis.Value = flexBasis
@@ -286,7 +286,7 @@ func (node *Node) StyleSetFlexBasis(flexBasis float32) {
 }
 
 // StyleSetFlexBasisPercent sets flex basis percent
-func (node *Node) StyleSetFlexBasisPercent(flexBasis float32) {
+func (node *Node) StyleSetFlexBasisPercent(flexBasis float64) {
 	if node.Style.FlexBasis.Value != flexBasis ||
 		node.Style.FlexBasis.Unit != UnitPercent {
 		node.Style.FlexBasis.Value = flexBasis
@@ -308,7 +308,7 @@ func NodeStyleSetFlexBasisAuto(node *Node) {
 }
 
 // StyleSetMargin sets margin
-func (node *Node) StyleSetMargin(edge Edge, margin float32) {
+func (node *Node) StyleSetMargin(edge Edge, margin float64) {
 	if node.Style.Margin[edge].Value != margin ||
 		node.Style.Margin[edge].Unit != UnitPoint {
 		node.Style.Margin[edge].Value = margin
@@ -321,7 +321,7 @@ func (node *Node) StyleSetMargin(edge Edge, margin float32) {
 }
 
 // StyleSetMarginPercent sets margin percent
-func (node *Node) StyleSetMarginPercent(edge Edge, margin float32) {
+func (node *Node) StyleSetMarginPercent(edge Edge, margin float64) {
 	if node.Style.Margin[edge].Value != margin ||
 		node.Style.Margin[edge].Unit != UnitPercent {
 		node.Style.Margin[edge].Value = margin
@@ -348,7 +348,7 @@ func (node *Node) StyleSetMarginAuto(edge Edge) {
 }
 
 // StyleSetPadding sets padding
-func (node *Node) StyleSetPadding(edge Edge, padding float32) {
+func (node *Node) StyleSetPadding(edge Edge, padding float64) {
 	if node.Style.Padding[edge].Value != padding ||
 		node.Style.Padding[edge].Unit != UnitPoint {
 		node.Style.Padding[edge].Value = padding
@@ -361,7 +361,7 @@ func (node *Node) StyleSetPadding(edge Edge, padding float32) {
 }
 
 // StyleSetPaddingPercent sets padding percent
-func (node *Node) StyleSetPaddingPercent(edge Edge, padding float32) {
+func (node *Node) StyleSetPaddingPercent(edge Edge, padding float64) {
 	if node.Style.Padding[edge].Value != padding ||
 		node.Style.Padding[edge].Unit != UnitPercent {
 		node.Style.Padding[edge].Value = padding
@@ -379,7 +379,7 @@ func (node *Node) StyleGetPadding(edge Edge) Value {
 }
 
 // StyleSetBorder sets border
-func (node *Node) StyleSetBorder(edge Edge, border float32) {
+func (node *Node) StyleSetBorder(edge Edge, border float64) {
 	if node.Style.Border[edge].Value != border ||
 		node.Style.Border[edge].Unit != UnitPoint {
 		node.Style.Border[edge].Value = border
@@ -392,12 +392,12 @@ func (node *Node) StyleSetBorder(edge Edge, border float32) {
 }
 
 // StyleGetBorder gets border
-func (node *Node) StyleGetBorder(edge Edge) float32 {
+func (node *Node) StyleGetBorder(edge Edge) float64 {
 	return node.Style.Border[edge].Value
 }
 
 // StyleSetMinWidth sets min width
-func (node *Node) StyleSetMinWidth(minWidth float32) {
+func (node *Node) StyleSetMinWidth(minWidth float64) {
 	if node.Style.MinDimensions[DimensionWidth].Value != minWidth ||
 		node.Style.MinDimensions[DimensionWidth].Unit != UnitPoint {
 		node.Style.MinDimensions[DimensionWidth].Value = minWidth
@@ -410,7 +410,7 @@ func (node *Node) StyleSetMinWidth(minWidth float32) {
 }
 
 // StyleSetMinWidthPercent sets width percent
-func (node *Node) StyleSetMinWidthPercent(minWidth float32) {
+func (node *Node) StyleSetMinWidthPercent(minWidth float64) {
 	if node.Style.MinDimensions[DimensionWidth].Value != minWidth ||
 		node.Style.MinDimensions[DimensionWidth].Unit != UnitPercent {
 		node.Style.MinDimensions[DimensionWidth].Value = minWidth
@@ -428,7 +428,7 @@ func (node *Node) StyleGetMinWidth() Value {
 }
 
 // StyleSetMinHeight sets min width
-func (node *Node) StyleSetMinHeight(minHeight float32) {
+func (node *Node) StyleSetMinHeight(minHeight float64) {
 	if node.Style.MinDimensions[DimensionHeight].Value != minHeight ||
 		node.Style.MinDimensions[DimensionHeight].Unit != UnitPoint {
 		node.Style.MinDimensions[DimensionHeight].Value = minHeight
@@ -441,7 +441,7 @@ func (node *Node) StyleSetMinHeight(minHeight float32) {
 }
 
 // StyleSetMinHeightPercent sets min height percent
-func (node *Node) StyleSetMinHeightPercent(minHeight float32) {
+func (node *Node) StyleSetMinHeightPercent(minHeight float64) {
 	if node.Style.MinDimensions[DimensionHeight].Value != minHeight ||
 		node.Style.MinDimensions[DimensionHeight].Unit != UnitPercent {
 		node.Style.MinDimensions[DimensionHeight].Value = minHeight
@@ -459,7 +459,7 @@ func (node *Node) StyleGetMinHeight() Value {
 }
 
 // StyleSetMaxWidth sets max width
-func (node *Node) StyleSetMaxWidth(maxWidth float32) {
+func (node *Node) StyleSetMaxWidth(maxWidth float64) {
 	if node.Style.MaxDimensions[DimensionWidth].Value != maxWidth ||
 		node.Style.MaxDimensions[DimensionWidth].Unit != UnitPoint {
 		node.Style.MaxDimensions[DimensionWidth].Value = maxWidth
@@ -472,7 +472,7 @@ func (node *Node) StyleSetMaxWidth(maxWidth float32) {
 }
 
 // StyleSetMaxWidthPercent sets max width percent
-func (node *Node) StyleSetMaxWidthPercent(maxWidth float32) {
+func (node *Node) StyleSetMaxWidthPercent(maxWidth float64) {
 	if node.Style.MaxDimensions[DimensionWidth].Value != maxWidth ||
 		node.Style.MaxDimensions[DimensionWidth].Unit != UnitPercent {
 		node.Style.MaxDimensions[DimensionWidth].Value = maxWidth
@@ -490,7 +490,7 @@ func (node *Node) StyleGetMaxWidth() Value {
 }
 
 // StyleSetMaxHeight sets max width
-func (node *Node) StyleSetMaxHeight(maxHeight float32) {
+func (node *Node) StyleSetMaxHeight(maxHeight float64) {
 	if node.Style.MaxDimensions[DimensionHeight].Value != maxHeight ||
 		node.Style.MaxDimensions[DimensionHeight].Unit != UnitPoint {
 		node.Style.MaxDimensions[DimensionHeight].Value = maxHeight
@@ -503,7 +503,7 @@ func (node *Node) StyleSetMaxHeight(maxHeight float32) {
 }
 
 // StyleSetMaxHeightPercent sets max height percent
-func (node *Node) StyleSetMaxHeightPercent(maxHeight float32) {
+func (node *Node) StyleSetMaxHeightPercent(maxHeight float64) {
 	if node.Style.MaxDimensions[DimensionHeight].Value != maxHeight ||
 		node.Style.MaxDimensions[DimensionHeight].Unit != UnitPercent {
 		node.Style.MaxDimensions[DimensionHeight].Value = maxHeight
@@ -521,7 +521,7 @@ func (node *Node) StyleGetMaxHeight() Value {
 }
 
 // StyleSetAspectRatio sets axpect ratio
-func (node *Node) StyleSetAspectRatio(aspectRatio float32) {
+func (node *Node) StyleSetAspectRatio(aspectRatio float64) {
 	if node.Style.AspectRatio != aspectRatio {
 		node.Style.AspectRatio = aspectRatio
 		nodeMarkDirtyInternal(node)
@@ -529,37 +529,37 @@ func (node *Node) StyleSetAspectRatio(aspectRatio float32) {
 }
 
 // LayoutGetLeft gets left
-func (node *Node) LayoutGetLeft() float32 {
+func (node *Node) LayoutGetLeft() float64 {
 	return node.Layout.Position[EdgeLeft]
 }
 
 // LayoutGetTop gets top
-func (node *Node) LayoutGetTop() float32 {
+func (node *Node) LayoutGetTop() float64 {
 	return node.Layout.Position[EdgeTop]
 }
 
 // LayoutGetRight gets right
-func (node *Node) LayoutGetRight() float32 {
+func (node *Node) LayoutGetRight() float64 {
 	return node.Layout.Position[EdgeRight]
 }
 
 // LayoutGetBottom gets bottom
-func (node *Node) LayoutGetBottom() float32 {
+func (node *Node) LayoutGetBottom() float64 {
 	return node.Layout.Position[EdgeBottom]
 }
 
 // LayoutGetWidth gets width
-func (node *Node) LayoutGetWidth() float32 {
+func (node *Node) LayoutGetWidth() float64 {
 	return node.Layout.Dimensions[DimensionWidth]
 }
 
 // LayoutGetHeight gets height
-func (node *Node) LayoutGetHeight() float32 {
+func (node *Node) LayoutGetHeight() float64 {
 	return node.Layout.Dimensions[DimensionHeight]
 }
 
 // LayoutGetMargin gets margin
-func (node *Node) LayoutGetMargin(edge Edge) float32 {
+func (node *Node) LayoutGetMargin(edge Edge) float64 {
 	assertWithNode(node, edge < EdgeEnd, "Cannot get layout properties of multi-edge shorthands")
 	if edge == EdgeLeft {
 		if node.Layout.Direction == DirectionRTL {
@@ -577,7 +577,7 @@ func (node *Node) LayoutGetMargin(edge Edge) float32 {
 }
 
 // LayoutGetBorder gets border
-func (node *Node) LayoutGetBorder(edge Edge) float32 {
+func (node *Node) LayoutGetBorder(edge Edge) float64 {
 	assertWithNode(node, edge < EdgeEnd,
 		"Cannot get layout properties of multi-edge shorthands")
 	if edge == EdgeLeft {
@@ -596,7 +596,7 @@ func (node *Node) LayoutGetBorder(edge Edge) float32 {
 }
 
 // LayoutGetPadding gets padding
-func (node *Node) LayoutGetPadding(edge Edge) float32 {
+func (node *Node) LayoutGetPadding(edge Edge) float64 {
 	assertWithNode(node, edge < EdgeEnd,
 		"Cannot get layout properties of multi-edge shorthands")
 	if edge == EdgeLeft {

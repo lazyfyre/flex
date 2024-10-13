@@ -2,8 +2,8 @@ package flex
 
 import "testing"
 
-func baselineFunc(node *Node, width float32, height float32) float32 {
-	baseline := node.Context.(float32)
+func baselineFunc(node *Node, width float64, height float64) float64 {
+	baseline := node.Context.(float64)
 	return baseline
 }
 
@@ -24,7 +24,7 @@ func TestAlign_baseline_customer_func(t *testing.T) {
 	rootChild1.StyleSetHeight(20)
 	root.InsertChild(rootChild1, 1)
 
-	var baselineValue float32 = 10
+	var baselineValue float64 = 10
 	rootChild1child0 := NewNode()
 	rootChild1child0.Context = baselineValue
 	rootChild1child0.StyleSetWidth(50)

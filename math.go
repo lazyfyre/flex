@@ -9,18 +9,18 @@ const (
 )
 
 var (
-	NAN = math.Float32frombits(uvnan)
+	NAN = math.float64frombits(uvnan)
 )
 
-// NaN returns an IEEE 754 ``not-a-number'' value.
-func NaN() float32 { return math.Float32frombits(uvnan) }
+// NaN returns an IEEE 754 “not-a-number” value.
+func NaN() float64 { return math.float64frombits(uvnan) }
 
-// IsNaN reports whether f is an IEEE 754 ``not-a-number'' value.
-func IsNaN(f float32) (is bool) {
+// IsNaN reports whether f is an IEEE 754 “not-a-number” value.
+func IsNaN(f float64) (is bool) {
 	return f != f
 }
 
-func feq(a, b float32) bool {
+func feq(a, b float64) bool {
 	if IsNaN(a) && IsNaN(b) {
 		return true
 	}
@@ -28,7 +28,7 @@ func feq(a, b float32) bool {
 }
 
 // https://github.com/evanphx/ulysses-libc/blob/master/src/math/fmaxf.c
-func fmaxf(a float32, b float32) float32 {
+func fmaxf(a float64, b float64) float64 {
 	if IsNaN(a) {
 		return b
 	}
@@ -43,7 +43,7 @@ func fmaxf(a float32, b float32) float32 {
 }
 
 // https://github.com/evanphx/ulysses-libc/blob/master/src/math/fminf.c
-func fminf(a float32, b float32) float32 {
+func fminf(a float64, b float64) float64 {
 	if IsNaN(a) {
 		return b
 	}
@@ -57,7 +57,7 @@ func fminf(a float32, b float32) float32 {
 	return b
 }
 
-func fabs(x float32) float32 {
+func fabs(x float64) float64 {
 	switch {
 	case x < 0:
 		return -x
@@ -67,7 +67,7 @@ func fabs(x float32) float32 {
 	return x
 }
 
-func fmodf(x, y float32) float32 {
+func fmodf(x, y float64) float64 {
 	res := math.Mod(float64(x), float64(y))
-	return float32(res)
+	return float64(res)
 }

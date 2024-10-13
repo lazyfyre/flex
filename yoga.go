@@ -7,13 +7,13 @@ import (
 
 // CachedMeasurement describes measurements
 type CachedMeasurement struct {
-	availableWidth    float32
-	availableHeight   float32
+	availableWidth    float64
+	availableHeight   float64
 	widthMeasureMode  MeasureMode
 	heightMeasureMode MeasureMode
 
-	computedWidth  float32
-	computedHeight float32
+	computedWidth  float64
+	computedHeight float64
 }
 
 // This value was chosen based on empiracle data. Even the most complicated
@@ -22,15 +22,15 @@ const maxCachedResultCount = 16
 
 // Layout describes position information after layout is finished
 type Layout struct {
-	Position   [4]float32
-	Dimensions [2]float32
-	Margin     [6]float32
-	Border     [6]float32
-	Padding    [6]float32
+	Position   [4]float64
+	Dimensions [2]float64
+	Margin     [6]float64
+	Border     [6]float64
+	Padding    [6]float64
 	Direction  Direction
 
 	computedFlexBasisGeneration int
-	computedFlexBasis           float32
+	computedFlexBasis           float64
 	HadOverflow                 bool
 
 	// Instead of recomputing the entire layout every single time, we
@@ -41,7 +41,7 @@ type Layout struct {
 	nextCachedMeasurementsIndex int
 	cachedMeasurements          [maxCachedResultCount]CachedMeasurement
 
-	measuredDimensions [2]float32
+	measuredDimensions [2]float64
 
 	cachedLayout CachedMeasurement
 }
@@ -58,9 +58,9 @@ type Style struct {
 	FlexWrap       Wrap
 	Overflow       Overflow
 	Display        Display
-	Flex           float32
-	FlexGrow       float32
-	FlexShrink     float32
+	Flex           float64
+	FlexGrow       float64
+	FlexShrink     float64
 	FlexBasis      Value
 	Margin         [EdgeCount]Value
 	Position       [EdgeCount]Value
@@ -71,7 +71,7 @@ type Style struct {
 	MaxDimensions  [2]Value
 
 	// Yoga specific properties, not compatible with flexbox specification
-	AspectRatio float32
+	AspectRatio float64
 }
 
 // Config describes a configuration
@@ -79,7 +79,7 @@ type Config struct {
 	experimentalFeatures      [experimentalFeatureCount + 1]bool
 	UseWebDefaults            bool
 	UseLegacyStretchBehaviour bool
-	PointScaleFactor          float32
+	PointScaleFactor          float64
 	Logger                    Logger
 	Context                   interface{}
 }
@@ -132,7 +132,7 @@ var (
 		undefinedValue,
 	}
 
-	defaultDimensionValues = [2]float32{
+	defaultDimensionValues = [2]float64{
 		Undefined,
 		Undefined,
 	}
@@ -149,9 +149,9 @@ var (
 )
 
 const (
-	defaultFlexGrow      float32 = 0
-	defaultFlexShrink    float32 = 0
-	webDefaultFlexShrink float32 = 1
+	defaultFlexGrow      float64 = 0
+	defaultFlexShrink    float64 = 0
+	webDefaultFlexShrink float64 = 1
 )
 
 var (
@@ -262,7 +262,7 @@ func computedEdgeValue(edges []Value, edge Edge, defaultValue *Value) *Value {
 	return defaultValue
 }
 
-func resolveValue(value *Value, parentSize float32) float32 {
+func resolveValue(value *Value, parentSize float64) float64 {
 	switch value.Unit {
 	case UnitUndefined, UnitAuto:
 		return Undefined
@@ -274,7 +274,7 @@ func resolveValue(value *Value, parentSize float32) float32 {
 	return Undefined
 }
 
-func resolveValueMargin(value *Value, parentSize float32) float32 {
+func resolveValueMargin(value *Value, parentSize float64) float64 {
 	if value.Unit == UnitAuto {
 		return 0
 	}
@@ -300,7 +300,11 @@ func NewNode() *Node {
 
 // Reset resets a node
 func (node *Node) Reset() {
-	assertWithNode(node, len(node.Children) == 0, "Cannot reset a node which still has children attached")
+	assertWithNode(
+		node,
+		len(node.Children) == 0,
+		"Cannot reset a node which still has children attached",
+	)
 	assertWithNode(node, node.Parent == nil, "Cannot reset a node still attached to a parent")
 
 	node.Children = nil
@@ -362,8 +366,16 @@ func (node *Node) SetMeasureFunc(measureFunc MeasureFunc) {
 
 // InsertChild inserts a child
 func (node *Node) InsertChild(child *Node, idx int) {
-	assertWithNode(node, child.Parent == nil, "Child already has a parent, it must be removed first.")
-	assertWithNode(node, node.Measure == nil, "Cannot add child: Nodes with measure functions cannot have children.")
+	assertWithNode(
+		node,
+		child.Parent == nil,
+		"Child already has a parent, it must be removed first.",
+	)
+	assertWithNode(
+		node,
+		node.Measure == nil,
+		"Cannot add child: Nodes with measure functions cannot have children.",
+	)
 
 	a := node.Children
 	// https://github.com/golang/go/wiki/SliceTricks
@@ -458,7 +470,7 @@ func NodeCopyStyle(dstNode *Node, srcNode *Node) {
 	}
 }
 
-func resolveFlexGrow(node *Node) float32 {
+func resolveFlexGrow(node *Node) float64 {
 	// Root nodes flexGrow should always be 0
 	if node.Parent == nil {
 		return 0
@@ -473,7 +485,7 @@ func resolveFlexGrow(node *Node) float32 {
 }
 
 // StyleGetFlexGrow gets flex grow
-func (node *Node) StyleGetFlexGrow() float32 {
+func (node *Node) StyleGetFlexGrow() float64 {
 	if FloatIsUndefined(node.Style.FlexGrow) {
 		return defaultFlexGrow
 	}
@@ -481,7 +493,7 @@ func (node *Node) StyleGetFlexGrow() float32 {
 }
 
 // StyleGetFlexShrink gets flex shrink
-func (node *Node) StyleGetFlexShrink() float32 {
+func (node *Node) StyleGetFlexShrink() float64 {
 	if FloatIsUndefined(node.Style.FlexShrink) {
 		if node.Config.UseWebDefaults {
 			return webDefaultFlexShrink
@@ -491,7 +503,7 @@ func (node *Node) StyleGetFlexShrink() float32 {
 	return node.Style.FlexShrink
 }
 
-func nodeResolveFlexShrink(node *Node) float32 {
+func nodeResolveFlexShrink(node *Node) float64 {
 	// Root nodes flexShrink should always be 0
 	if node.Parent == nil {
 		return 0
@@ -530,7 +542,7 @@ var (
 )
 
 // FloatIsUndefined returns true if value is undefined
-func FloatIsUndefined(value float32) bool {
+func FloatIsUndefined(value float64) bool {
 	return IsNaN(value)
 }
 
@@ -559,7 +571,7 @@ func resolveDimensions(node *Node) {
 }
 
 // FloatsEqual returns true if floats are approx. equal
-func FloatsEqual(a float32, b float32) bool {
+func FloatsEqual(a float64, b float64) bool {
 	if FloatIsUndefined(a) {
 		return FloatIsUndefined(b)
 	}
@@ -605,7 +617,7 @@ func flexDirectionIsColumn(flexDirection FlexDirection) bool {
 	return flexDirection == FlexDirectionColumn || flexDirection == FlexDirectionColumnReverse
 }
 
-func nodeLeadingMargin(node *Node, axis FlexDirection, widthSize float32) float32 {
+func nodeLeadingMargin(node *Node, axis FlexDirection, widthSize float64) float64 {
 	if flexDirectionIsRow(axis) && node.Style.Margin[EdgeStart].Unit != UnitUndefined {
 		return resolveValueMargin(&node.Style.Margin[EdgeStart], widthSize)
 	}
@@ -614,7 +626,7 @@ func nodeLeadingMargin(node *Node, axis FlexDirection, widthSize float32) float3
 	return resolveValueMargin(v, widthSize)
 }
 
-func nodeTrailingMargin(node *Node, axis FlexDirection, widthSize float32) float32 {
+func nodeTrailingMargin(node *Node, axis FlexDirection, widthSize float64) float64 {
 	if flexDirectionIsRow(axis) && node.Style.Margin[EdgeEnd].Unit != UnitUndefined {
 		return resolveValueMargin(&node.Style.Margin[EdgeEnd], widthSize)
 	}
@@ -623,25 +635,37 @@ func nodeTrailingMargin(node *Node, axis FlexDirection, widthSize float32) float
 		widthSize)
 }
 
-func nodeLeadingPadding(node *Node, axis FlexDirection, widthSize float32) float32 {
+func nodeLeadingPadding(node *Node, axis FlexDirection, widthSize float64) float64 {
 	if flexDirectionIsRow(axis) && node.Style.Padding[EdgeStart].Unit != UnitUndefined &&
 		resolveValue(&node.Style.Padding[EdgeStart], widthSize) >= 0 {
 		return resolveValue(&node.Style.Padding[EdgeStart], widthSize)
 	}
 
-	return fmaxf(resolveValue(computedEdgeValue(node.Style.Padding[:], leading[axis], &ValueZero), widthSize), 0)
+	return fmaxf(
+		resolveValue(
+			computedEdgeValue(node.Style.Padding[:], leading[axis], &ValueZero),
+			widthSize,
+		),
+		0,
+	)
 }
 
-func nodeTrailingPadding(node *Node, axis FlexDirection, widthSize float32) float32 {
+func nodeTrailingPadding(node *Node, axis FlexDirection, widthSize float64) float64 {
 	if flexDirectionIsRow(axis) && node.Style.Padding[EdgeEnd].Unit != UnitUndefined &&
 		resolveValue(&node.Style.Padding[EdgeEnd], widthSize) >= 0 {
 		return resolveValue(&node.Style.Padding[EdgeEnd], widthSize)
 	}
 
-	return fmaxf(resolveValue(computedEdgeValue(node.Style.Padding[:], trailing[axis], &ValueZero), widthSize), 0)
+	return fmaxf(
+		resolveValue(
+			computedEdgeValue(node.Style.Padding[:], trailing[axis], &ValueZero),
+			widthSize,
+		),
+		0,
+	)
 }
 
-func nodeLeadingBorder(node *Node, axis FlexDirection) float32 {
+func nodeLeadingBorder(node *Node, axis FlexDirection) float64 {
 	if flexDirectionIsRow(axis) && node.Style.Border[EdgeStart].Unit != UnitUndefined &&
 		node.Style.Border[EdgeStart].Value >= 0 {
 		return node.Style.Border[EdgeStart].Value
@@ -650,7 +674,7 @@ func nodeLeadingBorder(node *Node, axis FlexDirection) float32 {
 	return fmaxf(computedEdgeValue(node.Style.Border[:], leading[axis], &ValueZero).Value, 0)
 }
 
-func nodeTrailingBorder(node *Node, axis FlexDirection) float32 {
+func nodeTrailingBorder(node *Node, axis FlexDirection) float64 {
 	if flexDirectionIsRow(axis) && node.Style.Border[EdgeEnd].Unit != UnitUndefined &&
 		node.Style.Border[EdgeEnd].Value >= 0 {
 		return node.Style.Border[EdgeEnd].Value
@@ -659,21 +683,21 @@ func nodeTrailingBorder(node *Node, axis FlexDirection) float32 {
 	return fmaxf(computedEdgeValue(node.Style.Border[:], trailing[axis], &ValueZero).Value, 0)
 }
 
-func nodeLeadingPaddingAndBorder(node *Node, axis FlexDirection, widthSize float32) float32 {
+func nodeLeadingPaddingAndBorder(node *Node, axis FlexDirection, widthSize float64) float64 {
 	return nodeLeadingPadding(node, axis, widthSize) + nodeLeadingBorder(node, axis)
 }
 
-func nodeTrailingPaddingAndBorder(node *Node, axis FlexDirection, widthSize float32) float32 {
+func nodeTrailingPaddingAndBorder(node *Node, axis FlexDirection, widthSize float64) float64 {
 	return nodeTrailingPadding(node, axis, widthSize) + nodeTrailingBorder(node, axis)
 }
 
-func nodeMarginForAxis(node *Node, axis FlexDirection, widthSize float32) float32 {
+func nodeMarginForAxis(node *Node, axis FlexDirection, widthSize float64) float64 {
 	leading := nodeLeadingMargin(node, axis, widthSize)
 	trailing := nodeTrailingMargin(node, axis, widthSize)
 	return leading + trailing
 }
 
-func nodePaddingAndBorderForAxis(node *Node, axis FlexDirection, widthSize float32) float32 {
+func nodePaddingAndBorderForAxis(node *Node, axis FlexDirection, widthSize float64) float64 {
 	return nodeLeadingPaddingAndBorder(node, axis, widthSize) +
 		nodeTrailingPaddingAndBorder(node, axis, widthSize)
 }
@@ -700,10 +724,18 @@ func nodeResolveDirection(node *Node, parentDirection Direction) Direction {
 }
 
 // Baseline retuns baseline
-func Baseline(node *Node) float32 {
+func Baseline(node *Node) float64 {
 	if node.Baseline != nil {
-		baseline := node.Baseline(node, node.Layout.measuredDimensions[DimensionWidth], node.Layout.measuredDimensions[DimensionHeight])
-		assertWithNode(node, !FloatIsUndefined(baseline), "Expect custom baseline function to not return NaN")
+		baseline := node.Baseline(
+			node,
+			node.Layout.measuredDimensions[DimensionWidth],
+			node.Layout.measuredDimensions[DimensionHeight],
+		)
+		assertWithNode(
+			node,
+			!FloatIsUndefined(baseline),
+			"Expect custom baseline function to not return NaN",
+		)
 		return baseline
 	}
 
@@ -777,12 +809,12 @@ func isBaselineLayout(node *Node) bool {
 	return false
 }
 
-func nodeDimWithMargin(node *Node, axis FlexDirection, widthSize float32) float32 {
+func nodeDimWithMargin(node *Node, axis FlexDirection, widthSize float64) float64 {
 	return node.Layout.measuredDimensions[dim[axis]] + nodeLeadingMargin(node, axis, widthSize) +
 		nodeTrailingMargin(node, axis, widthSize)
 }
 
-func nodeIsStyleDimDefined(node *Node, axis FlexDirection, parentSize float32) bool {
+func nodeIsStyleDimDefined(node *Node, axis FlexDirection, parentSize float64) bool {
 	v := node.resolvedDimensions[dim[axis]]
 	isNotDefined := (v.Unit == UnitAuto ||
 		v.Unit == UnitUndefined ||
@@ -812,7 +844,7 @@ func nodeIsTrailingPosDefined(node *Node, axis FlexDirection) bool {
 			UnitUndefined
 }
 
-func nodeLeadingPosition(node *Node, axis FlexDirection, axisSize float32) float32 {
+func nodeLeadingPosition(node *Node, axis FlexDirection, axisSize float64) float64 {
 	if flexDirectionIsRow(axis) {
 		leadingPosition := computedEdgeValue(node.Style.Position[:], EdgeStart, &ValueUndefined)
 		if leadingPosition.Unit != UnitUndefined {
@@ -828,7 +860,7 @@ func nodeLeadingPosition(node *Node, axis FlexDirection, axisSize float32) float
 	return resolveValue(leadingPosition, axisSize)
 }
 
-func nodeTrailingPosition(node *Node, axis FlexDirection, axisSize float32) float32 {
+func nodeTrailingPosition(node *Node, axis FlexDirection, axisSize float64) float64 {
 	if flexDirectionIsRow(axis) {
 		trailingPosition := computedEdgeValue(node.Style.Position[:], EdgeEnd, &ValueUndefined)
 		if trailingPosition.Unit != UnitUndefined {
@@ -844,7 +876,12 @@ func nodeTrailingPosition(node *Node, axis FlexDirection, axisSize float32) floa
 	return resolveValue(trailingPosition, axisSize)
 }
 
-func nodeBoundAxisWithinMinAndMax(node *Node, axis FlexDirection, value float32, axisSize float32) float32 {
+func nodeBoundAxisWithinMinAndMax(
+	node *Node,
+	axis FlexDirection,
+	value float64,
+	axisSize float64,
+) float64 {
 	min := Undefined
 	max := Undefined
 
@@ -886,7 +923,13 @@ func marginTrailingValue(node *Node, axis FlexDirection) *Value {
 
 // nodeBoundAxis is like nodeBoundAxisWithinMinAndMax but also ensures that
 // the value doesn't go below the padding and border amount.
-func nodeBoundAxis(node *Node, axis FlexDirection, value float32, axisSize float32, widthSize float32) float32 {
+func nodeBoundAxis(
+	node *Node,
+	axis FlexDirection,
+	value float64,
+	axisSize float64,
+	widthSize float64,
+) float64 {
 	return fmaxf(nodeBoundAxisWithinMinAndMax(node, axis, value, axisSize),
 		nodePaddingAndBorderForAxis(node, axis, widthSize))
 }
@@ -899,14 +942,21 @@ func nodeSetChildTrailingPosition(node *Node, child *Node, axis FlexDirection) {
 
 // If both left and right are defined, then use left. Otherwise return
 // +left or -right depending on which is defined.
-func nodeRelativePosition(node *Node, axis FlexDirection, axisSize float32) float32 {
+func nodeRelativePosition(node *Node, axis FlexDirection, axisSize float64) float64 {
 	if nodeIsLeadingPosDefined(node, axis) {
 		return nodeLeadingPosition(node, axis, axisSize)
 	}
 	return -nodeTrailingPosition(node, axis, axisSize)
 }
 
-func constrainMaxSizeForMode(node *Node, axis FlexDirection, parentAxisSize float32, parentWidth float32, mode *MeasureMode, size *float32) {
+func constrainMaxSizeForMode(
+	node *Node,
+	axis FlexDirection,
+	parentAxisSize float64,
+	parentWidth float64,
+	mode *MeasureMode,
+	size *float64,
+) {
 	maxSize := resolveValue(&node.Style.MaxDimensions[dim[axis]], parentAxisSize) +
 		nodeMarginForAxis(node, axis, parentWidth)
 	switch *mode {
@@ -925,7 +975,13 @@ func constrainMaxSizeForMode(node *Node, axis FlexDirection, parentAxisSize floa
 	}
 }
 
-func nodeSetPosition(node *Node, direction Direction, mainSize float32, crossSize float32, parentWidth float32) {
+func nodeSetPosition(
+	node *Node,
+	direction Direction,
+	mainSize float64,
+	crossSize float64,
+	parentWidth float64,
+) {
 	/* Root nodes should be always layouted as LTR, so we don't return negative values. */
 	directionRespectingRoot := DirectionLTR
 	if node.Parent != nil {
@@ -941,17 +997,25 @@ func nodeSetPosition(node *Node, direction Direction, mainSize float32, crossSiz
 	pos := &node.Layout.Position
 	pos[leading[mainAxis]] = nodeLeadingMargin(node, mainAxis, parentWidth) + relativePositionMain
 	pos[trailing[mainAxis]] = nodeTrailingMargin(node, mainAxis, parentWidth) + relativePositionMain
-	pos[leading[crossAxis]] = nodeLeadingMargin(node, crossAxis, parentWidth) + relativePositionCross
-	pos[trailing[crossAxis]] = nodeTrailingMargin(node, crossAxis, parentWidth) + relativePositionCross
+	pos[leading[crossAxis]] = nodeLeadingMargin(
+		node,
+		crossAxis,
+		parentWidth,
+	) + relativePositionCross
+	pos[trailing[crossAxis]] = nodeTrailingMargin(
+		node,
+		crossAxis,
+		parentWidth,
+	) + relativePositionCross
 }
 
 func nodeComputeFlexBasisForChild(node *Node,
 	child *Node,
-	width float32,
+	width float64,
 	widthMode MeasureMode,
-	height float32,
-	parentWidth float32,
-	parentHeight float32,
+	height float64,
+	parentWidth float64,
+	parentHeight float64,
 	heightMode MeasureMode,
 	direction Direction,
 	config *Config) {
@@ -964,8 +1028,8 @@ func nodeComputeFlexBasisForChild(node *Node,
 		mainAxisParentSize = parentWidth
 	}
 
-	var childWidth float32
-	var childHeight float32
+	var childWidth float64
+	var childHeight float64
 	var childWidthMeasureMode MeasureMode
 	var childHeightMeasureMode MeasureMode
 
@@ -1088,7 +1152,15 @@ func nodeComputeFlexBasisForChild(node *Node,
 	child.Layout.computedFlexBasisGeneration = currentGenerationCount
 }
 
-func nodeAbsoluteLayoutChild(node *Node, child *Node, width float32, widthMode MeasureMode, height float32, direction Direction, config *Config) {
+func nodeAbsoluteLayoutChild(
+	node *Node,
+	child *Node,
+	width float64,
+	widthMode MeasureMode,
+	height float64,
+	direction Direction,
+	config *Config,
+) {
 	mainAxis := resolveFlexDirection(node.Style.FlexDirection, direction)
 	crossAxis := flexDirectionCross(mainAxis, direction)
 	isMainAxisRow := flexDirectionIsRow(mainAxis)
@@ -1248,11 +1320,23 @@ func nodeAbsoluteLayoutChild(node *Node, child *Node, width float32, widthMode M
 }
 
 // nodeWithMeasureFuncSetMeasuredDimensions sets measure dimensions for node with measure func
-func nodeWithMeasureFuncSetMeasuredDimensions(node *Node, availableWidth float32, availableHeight float32, widthMeasureMode MeasureMode, heightMeasureMode MeasureMode, parentWidth float32, parentHeight float32) {
+func nodeWithMeasureFuncSetMeasuredDimensions(
+	node *Node,
+	availableWidth float64,
+	availableHeight float64,
+	widthMeasureMode MeasureMode,
+	heightMeasureMode MeasureMode,
+	parentWidth float64,
+	parentHeight float64,
+) {
 	assertWithNode(node, node.Measure != nil, "Expected node to have custom measure function")
 
 	paddingAndBorderAxisRow := nodePaddingAndBorderForAxis(node, FlexDirectionRow, availableWidth)
-	paddingAndBorderAxisColumn := nodePaddingAndBorderForAxis(node, FlexDirectionColumn, availableWidth)
+	paddingAndBorderAxisColumn := nodePaddingAndBorderForAxis(
+		node,
+		FlexDirectionColumn,
+		availableWidth,
+	)
 	marginAxisRow := nodeMarginForAxis(node, FlexDirectionRow, availableWidth)
 	marginAxisColumn := nodeMarginForAxis(node, FlexDirectionColumn, availableWidth)
 
@@ -1298,9 +1382,21 @@ func nodeWithMeasureFuncSetMeasuredDimensions(node *Node, availableWidth float32
 // nodeEmptyContainerSetMeasuredDimensions sets measure dimensions for empty container
 // For nodes with no children, use the available values if they were provided,
 // or the minimum size as indicated by the padding and border sizes.
-func nodeEmptyContainerSetMeasuredDimensions(node *Node, availableWidth float32, availableHeight float32, widthMeasureMode MeasureMode, heightMeasureMode MeasureMode, parentWidth float32, parentHeight float32) {
+func nodeEmptyContainerSetMeasuredDimensions(
+	node *Node,
+	availableWidth float64,
+	availableHeight float64,
+	widthMeasureMode MeasureMode,
+	heightMeasureMode MeasureMode,
+	parentWidth float64,
+	parentHeight float64,
+) {
 	paddingAndBorderAxisRow := nodePaddingAndBorderForAxis(node, FlexDirectionRow, parentWidth)
-	paddingAndBorderAxisColumn := nodePaddingAndBorderForAxis(node, FlexDirectionColumn, parentWidth)
+	paddingAndBorderAxisColumn := nodePaddingAndBorderForAxis(
+		node,
+		FlexDirectionColumn,
+		parentWidth,
+	)
 	marginAxisRow := nodeMarginForAxis(node, FlexDirectionRow, parentWidth)
 	marginAxisColumn := nodeMarginForAxis(node, FlexDirectionColumn, parentWidth)
 
@@ -1308,22 +1404,34 @@ func nodeEmptyContainerSetMeasuredDimensions(node *Node, availableWidth float32,
 	if widthMeasureMode == MeasureModeUndefined || widthMeasureMode == MeasureModeAtMost {
 		width = paddingAndBorderAxisRow
 	}
-	node.Layout.measuredDimensions[DimensionWidth] = nodeBoundAxis(node, FlexDirectionRow, width, parentWidth, parentWidth)
+	node.Layout.measuredDimensions[DimensionWidth] = nodeBoundAxis(
+		node,
+		FlexDirectionRow,
+		width,
+		parentWidth,
+		parentWidth,
+	)
 
 	height := availableHeight - marginAxisColumn
 	if heightMeasureMode == MeasureModeUndefined || heightMeasureMode == MeasureModeAtMost {
 		height = paddingAndBorderAxisColumn
 	}
-	node.Layout.measuredDimensions[DimensionHeight] = nodeBoundAxis(node, FlexDirectionColumn, height, parentHeight, parentWidth)
+	node.Layout.measuredDimensions[DimensionHeight] = nodeBoundAxis(
+		node,
+		FlexDirectionColumn,
+		height,
+		parentHeight,
+		parentWidth,
+	)
 }
 
 func nodeFixedSizeSetMeasuredDimensions(node *Node,
-	availableWidth float32,
-	availableHeight float32,
+	availableWidth float64,
+	availableHeight float64,
 	widthMeasureMode MeasureMode,
 	heightMeasureMode MeasureMode,
-	parentWidth float32,
-	parentHeight float32) bool {
+	parentWidth float64,
+	parentHeight float64) bool {
 	if (widthMeasureMode == MeasureModeAtMost && availableWidth <= 0) ||
 		(heightMeasureMode == MeasureModeAtMost && availableHeight <= 0) ||
 		(widthMeasureMode == MeasureModeExactly && heightMeasureMode == MeasureModeExactly) {
@@ -1331,14 +1439,16 @@ func nodeFixedSizeSetMeasuredDimensions(node *Node,
 		marginAxisRow := nodeMarginForAxis(node, FlexDirectionRow, parentWidth)
 
 		width := availableWidth - marginAxisRow
-		if FloatIsUndefined(availableWidth) || (widthMeasureMode == MeasureModeAtMost && availableWidth < 0) {
+		if FloatIsUndefined(availableWidth) ||
+			(widthMeasureMode == MeasureModeAtMost && availableWidth < 0) {
 			width = 0
 		}
 		node.Layout.measuredDimensions[DimensionWidth] =
 			nodeBoundAxis(node, FlexDirectionRow, width, parentWidth, parentWidth)
 
 		height := availableHeight - marginAxisColumn
-		if FloatIsUndefined(availableHeight) || (heightMeasureMode == MeasureModeAtMost && availableHeight < 0) {
+		if FloatIsUndefined(availableHeight) ||
+			(heightMeasureMode == MeasureModeAtMost && availableHeight < 0) {
 			height = 0
 		}
 		node.Layout.measuredDimensions[DimensionHeight] =
@@ -1457,9 +1567,9 @@ func zeroOutLayoutRecursivly(node *Node) {
 //	an available size of
 //	undefined then it must also pass a measure mode of YGMeasureModeUndefined
 //	in that dimension.
-func nodelayoutImpl(node *Node, availableWidth float32, availableHeight float32,
+func nodelayoutImpl(node *Node, availableWidth float64, availableHeight float64,
 	parentDirection Direction, widthMeasureMode MeasureMode,
-	heightMeasureMode MeasureMode, parentWidth float32, parentHeight float32,
+	heightMeasureMode MeasureMode, parentWidth float64, parentHeight float64,
 	performLayout bool, config *Config) {
 	// assertWithNode(node, YGFloatIsUndefined(availableWidth) ? widthMeasureMode == YGMeasureModeUndefined : true, "availableWidth is indefinite so widthMeasureMode must be YGMeasureModeUndefined");
 	//assertWithNode(node, YGFloatIsUndefined(availableHeight) ? heightMeasureMode == YGMeasureModeUndefined : true, "availableHeight is indefinite so heightMeasureMode must be YGMeasureModeUndefined");
@@ -1487,19 +1597,44 @@ func nodelayoutImpl(node *Node, availableWidth float32, availableHeight float32,
 	node.Layout.Padding[EdgeBottom] = nodeTrailingPadding(node, flexColumnDirection, parentWidth)
 
 	if node.Measure != nil {
-		nodeWithMeasureFuncSetMeasuredDimensions(node, availableWidth, availableHeight, widthMeasureMode, heightMeasureMode, parentWidth, parentHeight)
+		nodeWithMeasureFuncSetMeasuredDimensions(
+			node,
+			availableWidth,
+			availableHeight,
+			widthMeasureMode,
+			heightMeasureMode,
+			parentWidth,
+			parentHeight,
+		)
 		return
 	}
 
 	childCount := len(node.Children)
 	if childCount == 0 {
-		nodeEmptyContainerSetMeasuredDimensions(node, availableWidth, availableHeight, widthMeasureMode, heightMeasureMode, parentWidth, parentHeight)
+		nodeEmptyContainerSetMeasuredDimensions(
+			node,
+			availableWidth,
+			availableHeight,
+			widthMeasureMode,
+			heightMeasureMode,
+			parentWidth,
+			parentHeight,
+		)
 		return
 	}
 
 	// If we're not being asked to perform a full layout we can skip the algorithm if we already know
 	// the size
-	if !performLayout && nodeFixedSizeSetMeasuredDimensions(node, availableWidth, availableHeight, widthMeasureMode, heightMeasureMode, parentWidth, parentHeight) {
+	if !performLayout &&
+		nodeFixedSizeSetMeasuredDimensions(
+			node,
+			availableWidth,
+			availableHeight,
+			widthMeasureMode,
+			heightMeasureMode,
+			parentWidth,
+			parentHeight,
+		) {
 		return
 	}
 
@@ -1548,9 +1683,15 @@ func nodelayoutImpl(node *Node, availableWidth float32, availableHeight float32,
 	marginAxisColumn := nodeMarginForAxis(node, FlexDirectionColumn, parentWidth)
 
 	// STEP 2: DETERMINE AVAILABLE SIZE IN MAIN AND CROSS DIRECTIONS
-	minInnerWidth := resolveValue(&node.Style.MinDimensions[DimensionWidth], parentWidth) - marginAxisRow -
+	minInnerWidth := resolveValue(
+		&node.Style.MinDimensions[DimensionWidth],
+		parentWidth,
+	) - marginAxisRow -
 		paddingAndBorderAxisRow
-	maxInnerWidth := resolveValue(&node.Style.MaxDimensions[DimensionWidth], parentWidth) - marginAxisRow -
+	maxInnerWidth := resolveValue(
+		&node.Style.MaxDimensions[DimensionWidth],
+		parentWidth,
+	) - marginAxisRow -
 		paddingAndBorderAxisRow
 	minInnerHeight := resolveValue(&node.Style.MinDimensions[DimensionHeight], parentHeight) -
 		marginAxisColumn - paddingAndBorderAxisColumn
@@ -1604,7 +1745,7 @@ func nodelayoutImpl(node *Node, availableWidth float32, availableHeight float32,
 		}
 	}
 
-	var totalOuterFlexBasis float32
+	var totalOuterFlexBasis float64
 
 	// STEP 3: DETERMINE FLEX BASIS FOR EACH ITEM
 	for i := 0; i < childCount; i++ {
@@ -1680,10 +1821,10 @@ func nodelayoutImpl(node *Node, availableWidth float32, availableHeight float32,
 	lineCount := 0
 
 	// Accumulated cross dimensions of all lines so far.
-	var totalLineCrossDim float32
+	var totalLineCrossDim float64
 
 	// Max main dimension of all the lines.
-	var maxLineMainDim float32
+	var maxLineMainDim float64
 
 	for endOfLineIndex < childCount {
 		// Number of items on the currently line. May be different than the
@@ -1696,11 +1837,11 @@ func nodelayoutImpl(node *Node, availableWidth float32, availableHeight float32,
 		// of all the children on the current line. This will be used in order to
 		// either set the dimensions of the node if none already exist or to compute
 		// the remaining space left for the flexible children.
-		var sizeConsumedOnCurrentLine float32
-		var sizeConsumedOnCurrentLineIncludingMinConstraint float32
+		var sizeConsumedOnCurrentLine float64
+		var sizeConsumedOnCurrentLineIncludingMinConstraint float64
 
-		var totalFlexGrowFactors float32
-		var totalFlexShrinkScaledFactors float32
+		var totalFlexGrowFactors float64
+		var totalFlexShrinkScaledFactors float64
 
 		// Maintain a linked list of the child nodes that can shrink and/or grow.
 		var firstRelativeChild *Node
@@ -1717,8 +1858,14 @@ func nodelayoutImpl(node *Node, availableWidth float32, availableHeight float32,
 
 			if child.Style.PositionType != PositionTypeAbsolute {
 				childMarginMainAxis := nodeMarginForAxis(child, mainAxis, availableInnerWidth)
-				flexBasisWithMaxConstraints := fminf(resolveValue(&child.Style.MaxDimensions[dim[mainAxis]], mainAxisParentSize), child.Layout.computedFlexBasis)
-				flexBasisWithMinAndMaxConstraints := fmaxf(resolveValue(&child.Style.MinDimensions[dim[mainAxis]], mainAxisParentSize), flexBasisWithMaxConstraints)
+				flexBasisWithMaxConstraints := fminf(
+					resolveValue(&child.Style.MaxDimensions[dim[mainAxis]], mainAxisParentSize),
+					child.Layout.computedFlexBasis,
+				)
+				flexBasisWithMinAndMaxConstraints := fmaxf(
+					resolveValue(&child.Style.MinDimensions[dim[mainAxis]], mainAxisParentSize),
+					flexBasisWithMaxConstraints,
+				)
 
 				// If this is a multi-line flow and this item pushes us over the
 				// available size, we've
@@ -1727,7 +1874,8 @@ func nodelayoutImpl(node *Node, availableWidth float32, availableHeight float32,
 				if sizeConsumedOnCurrentLineIncludingMinConstraint+flexBasisWithMinAndMaxConstraints+
 					childMarginMainAxis >
 					availableInnerMainDim &&
-					isNodeFlexWrap && itemsOnLine > 0 {
+					isNodeFlexWrap &&
+					itemsOnLine > 0 {
 					break
 				}
 
@@ -1774,8 +1922,8 @@ func nodelayoutImpl(node *Node, availableWidth float32, availableHeight float32,
 		// In order to position the elements in the main axis, we have two
 		// controls. The space between the beginning and the first element
 		// and the space between each two elements.
-		var leadingMainDim float32
-		var betweenMainDim float32
+		var leadingMainDim float64
+		var betweenMainDim float64
 
 		// STEP 5: RESOLVING FLEXIBLE LENGTHS ON MAIN AXIS
 		// Calculate the remaining available space that needs to be allocated.
@@ -1799,7 +1947,7 @@ func nodelayoutImpl(node *Node, availableWidth float32, availableHeight float32,
 			}
 		}
 
-		var remainingFreeSpace float32
+		var remainingFreeSpace float64
 		if !FloatIsUndefined(availableInnerMainDim) {
 			remainingFreeSpace = availableInnerMainDim - sizeConsumedOnCurrentLine
 		} else if sizeConsumedOnCurrentLine < 0 {
@@ -1811,14 +1959,14 @@ func nodelayoutImpl(node *Node, availableWidth float32, availableHeight float32,
 		}
 
 		originalRemainingFreeSpace := remainingFreeSpace
-		var deltaFreeSpace float32
+		var deltaFreeSpace float64
 
 		if !canSkipFlex {
-			var childFlexBasis float32
-			var flexShrinkScaledFactor float32
-			var flexGrowFactor float32
-			var baseMainSize float32
-			var boundMainSize float32
+			var childFlexBasis float64
+			var flexShrinkScaledFactor float64
+			var flexGrowFactor float64
+			var baseMainSize float64
+			var boundMainSize float64
 
 			// Do two passes over the flex items to figure out how to distribute the
 			// remaining space.
@@ -1843,8 +1991,8 @@ func nodelayoutImpl(node *Node, availableWidth float32, availableHeight float32,
 			// concerns because we know exactly how many passes it'll do.
 
 			// First pass: detect the flex items whose min/max raints trigger
-			var deltaFlexShrinkScaledFactors float32
-			var deltaFlexGrowFactors float32
+			var deltaFlexShrinkScaledFactors float64
+			var deltaFlexGrowFactors float64
 			currentRelativeChild = firstRelativeChild
 			for currentRelativeChild != nil {
 				childFlexBasis =
@@ -1855,7 +2003,9 @@ func nodelayoutImpl(node *Node, availableWidth float32, availableHeight float32,
 							currentRelativeChild.Layout.computedFlexBasis))
 
 				if remainingFreeSpace < 0 {
-					flexShrinkScaledFactor = -nodeResolveFlexShrink(currentRelativeChild) * childFlexBasis
+					flexShrinkScaledFactor = -nodeResolveFlexShrink(
+						currentRelativeChild,
+					) * childFlexBasis
 
 					// Is this child able to shrink?
 					if flexShrinkScaledFactor != 0 {
@@ -1924,10 +2074,12 @@ func nodelayoutImpl(node *Node, availableWidth float32, availableHeight float32,
 				updatedMainSize := childFlexBasis
 
 				if remainingFreeSpace < 0 {
-					flexShrinkScaledFactor = -nodeResolveFlexShrink(currentRelativeChild) * childFlexBasis
+					flexShrinkScaledFactor = -nodeResolveFlexShrink(
+						currentRelativeChild,
+					) * childFlexBasis
 					// Is this child able to shrink?
 					if flexShrinkScaledFactor != 0 {
-						var childSize float32
+						var childSize float64
 
 						if totalFlexShrinkScaledFactors == 0 {
 							childSize = childFlexBasis + flexShrinkScaledFactor
@@ -1961,15 +2113,23 @@ func nodelayoutImpl(node *Node, availableWidth float32, availableHeight float32,
 				deltaFreeSpace -= updatedMainSize - childFlexBasis
 
 				marginMain := nodeMarginForAxis(currentRelativeChild, mainAxis, availableInnerWidth)
-				marginCross := nodeMarginForAxis(currentRelativeChild, crossAxis, availableInnerWidth)
+				marginCross := nodeMarginForAxis(
+					currentRelativeChild,
+					crossAxis,
+					availableInnerWidth,
+				)
 
-				var childCrossSize float32
+				var childCrossSize float64
 				childMainSize := updatedMainSize + marginMain
 				var childCrossMeasureMode MeasureMode
 				childMainMeasureMode := MeasureModeExactly
 
 				if !FloatIsUndefined(availableInnerCrossDim) &&
-					!nodeIsStyleDimDefined(currentRelativeChild, crossAxis, availableInnerCrossDim) &&
+					!nodeIsStyleDimDefined(
+						currentRelativeChild,
+						crossAxis,
+						availableInnerCrossDim,
+					) &&
 					measureModeCrossDim == MeasureModeExactly &&
 					!(isNodeFlexWrap && flexBasisOverflows) &&
 					nodeAlignItem(node, currentRelativeChild) == AlignStretch {
@@ -2000,7 +2160,14 @@ func nodelayoutImpl(node *Node, availableWidth float32, availableHeight float32,
 					if isMainAxisRow {
 						v = (childMainSize - marginMain) / currentRelativeChild.Style.AspectRatio
 					}
-					childCrossSize = fmaxf(v, nodePaddingAndBorderForAxis(currentRelativeChild, crossAxis, availableInnerWidth))
+					childCrossSize = fmaxf(
+						v,
+						nodePaddingAndBorderForAxis(
+							currentRelativeChild,
+							crossAxis,
+							availableInnerWidth,
+						),
+					)
 					childCrossMeasureMode = MeasureModeExactly
 
 					// Parent size raint should have higher priority than flex
@@ -2030,7 +2197,11 @@ func nodelayoutImpl(node *Node, availableWidth float32, availableHeight float32,
 					&childCrossMeasureMode,
 					&childCrossSize)
 
-				requiresStretchLayout := !nodeIsStyleDimDefined(currentRelativeChild, crossAxis, availableInnerCrossDim) &&
+				requiresStretchLayout := !nodeIsStyleDimDefined(
+					currentRelativeChild,
+					crossAxis,
+					availableInnerCrossDim,
+				) &&
 					nodeAlignItem(node, currentRelativeChild) == AlignStretch
 
 				childWidth := childCrossSize
@@ -2122,20 +2293,20 @@ func nodelayoutImpl(node *Node, availableWidth float32, availableHeight float32,
 				leadingMainDim = remainingFreeSpace
 			case JustifySpaceBetween:
 				if itemsOnLine > 1 {
-					betweenMainDim = fmaxf(remainingFreeSpace, 0) / float32(itemsOnLine-1)
+					betweenMainDim = fmaxf(remainingFreeSpace, 0) / float64(itemsOnLine-1)
 				} else {
 					betweenMainDim = 0
 				}
 			case JustifySpaceAround:
 				// Space on the edges is half of the space between elements
-				betweenMainDim = remainingFreeSpace / float32(itemsOnLine)
+				betweenMainDim = remainingFreeSpace / float64(itemsOnLine)
 				leadingMainDim = betweenMainDim / 2
 			case JustifyFlexStart:
 			}
 		}
 
 		mainDim := leadingPaddingAndBorderMain + leadingMainDim
-		var crossDim float32
+		var crossDim float64
 
 		for i := startOfLineIndex; i < endOfLineIndex; i++ {
 			child := node.Children[i]
@@ -2159,7 +2330,7 @@ func nodelayoutImpl(node *Node, availableWidth float32, availableHeight float32,
 				// do not take part in that phase.
 				if child.Style.PositionType == PositionTypeRelative {
 					if marginLeadingValue(child, mainAxis).Unit == UnitAuto {
-						mainDim += remainingFreeSpace / float32(numberOfAutoMarginsOnCurrentLine)
+						mainDim += remainingFreeSpace / float64(numberOfAutoMarginsOnCurrentLine)
 					}
 
 					if performLayout {
@@ -2167,7 +2338,7 @@ func nodelayoutImpl(node *Node, availableWidth float32, availableHeight float32,
 					}
 
 					if marginTrailingValue(child, mainAxis).Unit == UnitAuto {
-						mainDim += remainingFreeSpace / float32(numberOfAutoMarginsOnCurrentLine)
+						mainDim += remainingFreeSpace / float64(numberOfAutoMarginsOnCurrentLine)
 					}
 
 					if canSkipFlex {
@@ -2356,7 +2527,7 @@ func nodelayoutImpl(node *Node, availableWidth float32, availableHeight float32,
 		!FloatIsUndefined(availableInnerCrossDim) {
 		remainingAlignContentDim := availableInnerCrossDim - totalLineCrossDim
 
-		var crossDimLead float32
+		var crossDimLead float64
 		currentLead := leadingPaddingAndBorderCross
 
 		switch node.Style.AlignContent {
@@ -2366,20 +2537,20 @@ func nodelayoutImpl(node *Node, availableWidth float32, availableHeight float32,
 			currentLead += remainingAlignContentDim / 2
 		case AlignStretch:
 			if availableInnerCrossDim > totalLineCrossDim {
-				crossDimLead = remainingAlignContentDim / float32(lineCount)
+				crossDimLead = remainingAlignContentDim / float64(lineCount)
 			}
 		case AlignSpaceAround:
 			if availableInnerCrossDim > totalLineCrossDim {
-				currentLead += remainingAlignContentDim / float32(2*lineCount)
+				currentLead += remainingAlignContentDim / float64(2*lineCount)
 				if lineCount > 1 {
-					crossDimLead = remainingAlignContentDim / float32(lineCount)
+					crossDimLead = remainingAlignContentDim / float64(lineCount)
 				}
 			} else {
 				currentLead += remainingAlignContentDim / 2
 			}
 		case AlignSpaceBetween:
 			if availableInnerCrossDim > totalLineCrossDim && lineCount > 1 {
-				crossDimLead = remainingAlignContentDim / float32(lineCount-1)
+				crossDimLead = remainingAlignContentDim / float64(lineCount-1)
 			}
 		case AlignAuto:
 		case AlignFlexStart:
@@ -2392,9 +2563,9 @@ func nodelayoutImpl(node *Node, availableWidth float32, availableHeight float32,
 			var ii int
 
 			// compute the line's height and find the endIndex
-			var lineHeight float32
-			var maxAscentForCurrentLine float32
-			var maxDescentForCurrentLine float32
+			var lineHeight float64
+			var maxAscentForCurrentLine float64
+			var maxDescentForCurrentLine float64
 			for ii = startIndex; ii < childCount; ii++ {
 				child := node.Children[ii]
 				if child.Style.Display == DisplayNone {
@@ -2410,11 +2581,24 @@ func nodelayoutImpl(node *Node, availableWidth float32, availableHeight float32,
 								nodeMarginForAxis(child, crossAxis, availableInnerWidth))
 					}
 					if nodeAlignItem(node, child) == AlignBaseline {
-						ascent := Baseline(child) + nodeLeadingMargin(child, FlexDirectionColumn, availableInnerWidth)
-						descent := child.Layout.measuredDimensions[DimensionHeight] + nodeMarginForAxis(child, FlexDirectionColumn, availableInnerWidth) - ascent
+						ascent := Baseline(
+							child,
+						) + nodeLeadingMargin(
+							child,
+							FlexDirectionColumn,
+							availableInnerWidth,
+						)
+						descent := child.Layout.measuredDimensions[DimensionHeight] + nodeMarginForAxis(
+							child,
+							FlexDirectionColumn,
+							availableInnerWidth,
+						) - ascent
 						maxAscentForCurrentLine = fmaxf(maxAscentForCurrentLine, ascent)
 						maxDescentForCurrentLine = fmaxf(maxDescentForCurrentLine, descent)
-						lineHeight = fmaxf(lineHeight, maxAscentForCurrentLine+maxDescentForCurrentLine)
+						lineHeight = fmaxf(
+							lineHeight,
+							maxAscentForCurrentLine+maxDescentForCurrentLine,
+						)
 					}
 				}
 			}
@@ -2432,7 +2616,11 @@ func nodelayoutImpl(node *Node, availableWidth float32, availableHeight float32,
 						case AlignFlexStart:
 							{
 								child.Layout.Position[pos[crossAxis]] =
-									currentLead + nodeLeadingMargin(child, crossAxis, availableInnerWidth)
+									currentLead + nodeLeadingMargin(
+										child,
+										crossAxis,
+										availableInnerWidth,
+									)
 							}
 						case AlignFlexEnd:
 							{
@@ -2449,21 +2637,37 @@ func nodelayoutImpl(node *Node, availableWidth float32, availableHeight float32,
 						case AlignStretch:
 							{
 								child.Layout.Position[pos[crossAxis]] =
-									currentLead + nodeLeadingMargin(child, crossAxis, availableInnerWidth)
+									currentLead + nodeLeadingMargin(
+										child,
+										crossAxis,
+										availableInnerWidth,
+									)
 
 								// Remeasure child with the line height as it as been only measured with the
 								// parents height yet.
-								if !nodeIsStyleDimDefined(child, crossAxis, availableInnerCrossDim) {
+								if !nodeIsStyleDimDefined(
+									child,
+									crossAxis,
+									availableInnerCrossDim,
+								) {
 									childWidth := lineHeight
 									if isMainAxisRow {
 										childWidth = child.Layout.measuredDimensions[DimensionWidth] +
-											nodeMarginForAxis(child, mainAxis, availableInnerWidth)
+											nodeMarginForAxis(
+												child,
+												mainAxis,
+												availableInnerWidth,
+											)
 									}
 
 									childHeight := lineHeight
 									if !isMainAxisRow {
 										childHeight = child.Layout.measuredDimensions[DimensionHeight] +
-											nodeMarginForAxis(child, crossAxis, availableInnerWidth)
+											nodeMarginForAxis(
+												child,
+												crossAxis,
+												availableInnerWidth,
+											)
 									}
 
 									if !(FloatsEqual(childWidth,
@@ -2488,7 +2692,11 @@ func nodelayoutImpl(node *Node, availableWidth float32, availableHeight float32,
 							{
 								child.Layout.Position[EdgeTop] =
 									currentLead + maxAscentForCurrentLine - Baseline(child) +
-										nodeLeadingPosition(child, FlexDirectionColumn, availableInnerCrossDim)
+										nodeLeadingPosition(
+											child,
+											FlexDirectionColumn,
+											availableInnerCrossDim,
+										)
 							}
 						case AlignAuto:
 						case AlignSpaceBetween:
@@ -2575,8 +2783,10 @@ func nodelayoutImpl(node *Node, availableWidth float32, availableHeight float32,
 		}
 
 		// STEP 11: SETTING TRAILING POSITIONS FOR CHILDREN
-		needsMainTrailingPos := mainAxis == FlexDirectionRowReverse || mainAxis == FlexDirectionColumnReverse
-		needsCrossTrailingPos := crossAxis == FlexDirectionRowReverse || crossAxis == FlexDirectionColumnReverse
+		needsMainTrailingPos := mainAxis == FlexDirectionRowReverse ||
+			mainAxis == FlexDirectionColumnReverse
+		needsCrossTrailingPos := crossAxis == FlexDirectionRowReverse ||
+			crossAxis == FlexDirectionColumnReverse
 
 		// Set trailing position if necessary.
 		if needsMainTrailingPos || needsCrossTrailingPos {
@@ -2635,22 +2845,42 @@ func measureModeName(mode MeasureMode, performLayout bool) string {
 	return measureModeNames[mode]
 }
 
-func measureModeSizeIsExactAndMatchesOldMeasuredSize(sizeMode MeasureMode, size float32, lastComputedSize float32) bool {
+func measureModeSizeIsExactAndMatchesOldMeasuredSize(
+	sizeMode MeasureMode,
+	size float64,
+	lastComputedSize float64,
+) bool {
 	return sizeMode == MeasureModeExactly && FloatsEqual(size, lastComputedSize)
 }
 
-func measureModeOldSizeIsUnspecifiedAndStillFits(sizeMode MeasureMode, size float32, lastSizeMode MeasureMode, lastComputedSize float32) bool {
+func measureModeOldSizeIsUnspecifiedAndStillFits(
+	sizeMode MeasureMode,
+	size float64,
+	lastSizeMode MeasureMode,
+	lastComputedSize float64,
+) bool {
 	return sizeMode == MeasureModeAtMost && lastSizeMode == MeasureModeUndefined &&
 		(size >= lastComputedSize || FloatsEqual(size, lastComputedSize))
 }
 
-func measureModeNewMeasureSizeIsStricterAndStillValid(sizeMode MeasureMode, size float32, lastSizeMode MeasureMode, lastSize float32, lastComputedSize float32) bool {
+func measureModeNewMeasureSizeIsStricterAndStillValid(
+	sizeMode MeasureMode,
+	size float64,
+	lastSizeMode MeasureMode,
+	lastSize float64,
+	lastComputedSize float64,
+) bool {
 	return lastSizeMode == MeasureModeAtMost && sizeMode == MeasureModeAtMost &&
 		lastSize > size && (lastComputedSize <= size || FloatsEqual(size, lastComputedSize))
 }
 
 // roundValueToPixelGrid rounds value to pixel grid
-func roundValueToPixelGrid(value float32, pointScaleFactor float32, forceCeil bool, forceFloor bool) float32 {
+func roundValueToPixelGrid(
+	value float64,
+	pointScaleFactor float64,
+	forceCeil bool,
+	forceFloor bool,
+) float64 {
 	scaledValue := value * pointScaleFactor
 	fractial := fmodf(scaledValue, 1.0)
 	if FloatsEqual(fractial, 0) {
@@ -2665,7 +2895,7 @@ func roundValueToPixelGrid(value float32, pointScaleFactor float32, forceCeil bo
 		scaledValue = scaledValue - fractial
 	} else {
 		// Finally we just round the value
-		var f float32
+		var f float64
 		if fractial >= 0.5 {
 			f = 1.0
 		}
@@ -2675,7 +2905,21 @@ func roundValueToPixelGrid(value float32, pointScaleFactor float32, forceCeil bo
 }
 
 // nodeCanUseCachedMeasurement returns true if can use cached measurement
-func nodeCanUseCachedMeasurement(widthMode MeasureMode, width float32, heightMode MeasureMode, height float32, lastWidthMode MeasureMode, lastWidth float32, lastHeightMode MeasureMode, lastHeight float32, lastComputedWidth float32, lastComputedHeight float32, marginRow float32, marginColumn float32, config *Config) bool {
+func nodeCanUseCachedMeasurement(
+	widthMode MeasureMode,
+	width float64,
+	heightMode MeasureMode,
+	height float64,
+	lastWidthMode MeasureMode,
+	lastWidth float64,
+	lastHeightMode MeasureMode,
+	lastHeight float64,
+	lastComputedWidth float64,
+	lastComputedHeight float64,
+	marginRow float64,
+	marginColumn float64,
+	config *Config,
+) bool {
 	if lastComputedHeight < 0 || lastComputedWidth < 0 {
 		return false
 	}
@@ -2689,11 +2933,18 @@ func nodeCanUseCachedMeasurement(widthMode MeasureMode, width float32, heightMod
 		effectiveWidth = roundValueToPixelGrid(width, config.PointScaleFactor, false, false)
 		effectiveHeight = roundValueToPixelGrid(height, config.PointScaleFactor, false, false)
 		effectiveLastWidth = roundValueToPixelGrid(lastWidth, config.PointScaleFactor, false, false)
-		effectiveLastHeight = roundValueToPixelGrid(lastHeight, config.PointScaleFactor, false, false)
+		effectiveLastHeight = roundValueToPixelGrid(
+			lastHeight,
+			config.PointScaleFactor,
+			false,
+			false,
+		)
 	}
 
-	hasSameWidthSpec := lastWidthMode == widthMode && FloatsEqual(effectiveLastWidth, effectiveWidth)
-	hasSameHeightSpec := lastHeightMode == heightMode && FloatsEqual(effectiveLastHeight, effectiveHeight)
+	hasSameWidthSpec := lastWidthMode == widthMode &&
+		FloatsEqual(effectiveLastWidth, effectiveWidth)
+	hasSameHeightSpec := lastHeightMode == heightMode &&
+		FloatsEqual(effectiveLastHeight, effectiveHeight)
 
 	widthIsCompatible :=
 		hasSameWidthSpec || measureModeSizeIsExactAndMatchesOldMeasuredSize(widthMode,
@@ -2727,9 +2978,9 @@ func nodeCanUseCachedMeasurement(widthMode MeasureMode, width float32, heightMod
 //
 //	Input parameters are the same as YGNodelayoutImpl (see above)
 //	Return parameter is true if layout was performed, false if skipped
-func layoutNodeInternal(node *Node, availableWidth float32, availableHeight float32,
+func layoutNodeInternal(node *Node, availableWidth float64, availableHeight float64,
 	parentDirection Direction, widthMeasureMode MeasureMode,
-	heightMeasureMode MeasureMode, parentWidth float32, parentHeight float32,
+	heightMeasureMode MeasureMode, parentWidth float64, parentHeight float64,
 	performLayout bool, reason string, config *Config) bool {
 	layout := &node.Layout
 
@@ -2927,7 +3178,7 @@ func layoutNodeInternal(node *Node, availableWidth float32, availableHeight floa
 }
 
 // SetPointScaleFactor sets scale factor
-func (config *Config) SetPointScaleFactor(pixelsInPoint float32) {
+func (config *Config) SetPointScaleFactor(pixelsInPoint float64) {
 	assertWithConfig(config, pixelsInPoint >= 0, "Scale factor should not be less than zero")
 
 	// We store points for Pixel as we will use it for rounding
@@ -2939,7 +3190,12 @@ func (config *Config) SetPointScaleFactor(pixelsInPoint float32) {
 	}
 }
 
-func roundToPixelGrid(node *Node, pointScaleFactor float32, absoluteLeft float32, absoluteTop float32) {
+func roundToPixelGrid(
+	node *Node,
+	pointScaleFactor float64,
+	absoluteLeft float64,
+	absoluteTop float64,
+) {
 	if pointScaleFactor == 0.0 {
 		return
 	}
@@ -2960,8 +3216,18 @@ func roundToPixelGrid(node *Node, pointScaleFactor float32, absoluteLeft float32
 	// lead to unwanted text truncation.
 	textRounding := node.NodeType == NodeTypeText
 
-	node.Layout.Position[EdgeLeft] = roundValueToPixelGrid(nodeLeft, pointScaleFactor, false, textRounding)
-	node.Layout.Position[EdgeTop] = roundValueToPixelGrid(nodeTop, pointScaleFactor, false, textRounding)
+	node.Layout.Position[EdgeLeft] = roundValueToPixelGrid(
+		nodeLeft,
+		pointScaleFactor,
+		false,
+		textRounding,
+	)
+	node.Layout.Position[EdgeTop] = roundValueToPixelGrid(
+		nodeTop,
+		pointScaleFactor,
+		false,
+		textRounding,
+	)
 
 	// We multiply dimension by scale factor and if the result is close to the whole number, we don't have any fraction
 	// To verify if the result is close to whole number we want to check both floor and ceil numbers
@@ -2990,7 +3256,7 @@ func roundToPixelGrid(node *Node, pointScaleFactor float32, absoluteLeft float32
 	}
 }
 
-func calcStartWidth(node *Node, parentWidth float32) (float32, MeasureMode) {
+func calcStartWidth(node *Node, parentWidth float64) (float64, MeasureMode) {
 	if nodeIsStyleDimDefined(node, FlexDirectionRow, parentWidth) {
 		width := resolveValue(node.resolvedDimensions[dim[FlexDirectionRow]], parentWidth)
 		margin := nodeMarginForAxis(node, FlexDirectionRow, parentWidth)
@@ -3008,7 +3274,7 @@ func calcStartWidth(node *Node, parentWidth float32) (float32, MeasureMode) {
 	}
 	return width, widthMeasureMode
 }
-func calcStartHeight(node *Node, parentWidth, parentHeight float32) (float32, MeasureMode) {
+func calcStartHeight(node *Node, parentWidth, parentHeight float64) (float64, MeasureMode) {
 	if nodeIsStyleDimDefined(node, FlexDirectionColumn, parentHeight) {
 		height := resolveValue(node.resolvedDimensions[dim[FlexDirectionColumn]], parentHeight)
 		margin := nodeMarginForAxis(node, FlexDirectionColumn, parentWidth)
@@ -3027,7 +3293,12 @@ func calcStartHeight(node *Node, parentWidth, parentHeight float32) (float32, Me
 }
 
 // CalculateLayout calculates layout
-func CalculateLayout(node *Node, parentWidth float32, parentHeight float32, parentDirection Direction) {
+func CalculateLayout(
+	node *Node,
+	parentWidth float64,
+	parentHeight float64,
+	parentDirection Direction,
+) {
 	// Increment the generation count. This will force the recursive routine to
 	// visit
 	// all dirty nodes at least once. Subsequent visits will be skipped if the

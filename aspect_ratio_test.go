@@ -2,8 +2,8 @@ package flex
 
 import "testing"
 
-func _measure(node *Node, width float32, widthMode MeasureMode,
-	height float32, heightMode MeasureMode) Size {
+func _measure(node *Node, width float64, widthMode MeasureMode,
+	height float64, heightMode MeasureMode) Size {
 
 	if widthMode != MeasureModeExactly {
 		width = 50

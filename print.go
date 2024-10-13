@@ -148,11 +148,16 @@ func (printer *NodePrinter) printEdges(node *Node, str string, edges []Value) {
 	}
 }
 
-func (printer *NodePrinter) printEdgeIfNotUndefined(node *Node, str string, edges []Value, edge Edge) {
+func (printer *NodePrinter) printEdgeIfNotUndefined(
+	node *Node,
+	str string,
+	edges []Value,
+	edge Edge,
+) {
 	printer.printNumberIfNotUndefined(node, str, computedEdgeValue(edges, edge, &ValueUndefined))
 }
 
-func (printer *NodePrinter) printFloatIfNotUndefined(node *Node, str string, number float32) {
+func (printer *NodePrinter) printFloatIfNotUndefined(node *Node, str string, number float64) {
 	if !FloatIsUndefined(number) {
 		printer.printf("%s: %g; ", str, number)
 	}

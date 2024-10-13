@@ -6,7 +6,13 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func measureMax(node *Node, width float32, widthMode MeasureMode, height float32, heightMode MeasureMode) Size {
+func measureMax(
+	node *Node,
+	width float64,
+	widthMode MeasureMode,
+	height float64,
+	heightMode MeasureMode,
+) Size {
 	measureCount := node.Context.(int)
 	measureCount++
 	node.Context = measureCount
@@ -23,7 +29,13 @@ func measureMax(node *Node, width float32, widthMode MeasureMode, height float32
 	}
 }
 
-func measureMin(node *Node, width float32, widthMode MeasureMode, height float32, heightMode MeasureMode) Size {
+func measureMin(
+	node *Node,
+	width float64,
+	widthMode MeasureMode,
+	height float64,
+	heightMode MeasureMode,
+) Size {
 	measureCount := node.Context.(int)
 	measureCount++
 	node.Context = measureCount
@@ -40,7 +52,13 @@ func measureMin(node *Node, width float32, widthMode MeasureMode, height float32
 	}
 }
 
-func measure8449(node *Node, width float32, widthMode MeasureMode, height float32, heightMode MeasureMode) Size {
+func measure8449(
+	node *Node,
+	width float64,
+	widthMode MeasureMode,
+	height float64,
+	heightMode MeasureMode,
+) Size {
 	measureCount, ok := node.Context.(int)
 	if ok {
 		measureCount++

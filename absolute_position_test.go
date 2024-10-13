@@ -10,7 +10,7 @@ const (
 	eps = 0.000001
 )
 
-func assertFloatEqual(t *testing.T, got, exp float32) {
+func assertFloatEqual(t *testing.T, got, exp float64) {
 	assert.Equal(t, got, exp)
 	diff := fabs(got - exp)
 	if diff > eps {

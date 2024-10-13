@@ -7,9 +7,9 @@ import (
 )
 
 type measureConstraint struct {
-	width      float32
+	width      float64
 	widthMode  MeasureMode
-	height     float32
+	height     float64
 	heightMode MeasureMode
 }
 
@@ -19,9 +19,9 @@ type measureConstraintList struct {
 }
 
 func _measure2(node *Node,
-	width float32,
+	width float64,
 	widthMode MeasureMode,
-	height float32,
+	height float64,
 	heightMode MeasureMode) Size {
 	constraintList := node.Context.(*measureConstraintList)
 	constraints := constraintList.constraints

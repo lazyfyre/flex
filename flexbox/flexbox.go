@@ -22,15 +22,15 @@ type AlignSelf struct {
 }
 
 type Flex struct {
-	Value float32
+	Value float64
 }
 
 type FlexBasis struct {
-	Value float32
+	Value float64
 }
 
 type FlexBasisPercent struct {
-	Value float32
+	Value float64
 }
 
 type FlexDirection struct {
@@ -38,11 +38,11 @@ type FlexDirection struct {
 }
 
 type FlexGrow struct {
-	Value float32
+	Value float64
 }
 
 type FlexShrink struct {
-	Value float32
+	Value float64
 }
 
 type FlexWrap struct {
@@ -54,160 +54,160 @@ type JustifyContent struct {
 }
 
 type Height struct {
-	Value float32
+	Value float64
 }
 
 type HeightPercent struct {
-	Value float32
+	Value float64
 }
 
 type HeightAuto struct {
 }
 
 type Width struct {
-	Value float32
+	Value float64
 }
 
 type WidthPercent struct {
-	Value float32
+	Value float64
 }
 
 type WidthAuto struct {
 }
 
 type MaxHeight struct {
-	Value float32
+	Value float64
 }
 
 type MaxHeightPercent struct {
-	Value float32
+	Value float64
 }
 
 type MaxWidth struct {
-	Value float32
+	Value float64
 }
 
 type MaxWidthPercent struct {
-	Value float32
+	Value float64
 }
 
 type MinHeight struct {
-	Value float32
+	Value float64
 }
 
 type MinHeightPercent struct {
-	Value float32
+	Value float64
 }
 
 type MinWidth struct {
-	Value float32
+	Value float64
 }
 
 type MinWidthPercent struct {
-	Value float32
+	Value float64
 }
 
 type MarginTop struct {
-	Value float32
+	Value float64
 }
 
 type MarginTopPercent struct {
-	Value float32
+	Value float64
 }
 
 type MarginRight struct {
-	Value float32
+	Value float64
 }
 
 type MarginRightPercent struct {
-	Value float32
+	Value float64
 }
 
 type MarginBottom struct {
-	Value float32
+	Value float64
 }
 
 type MarginBottomPercent struct {
-	Value float32
+	Value float64
 }
 type MarginLeft struct {
-	Value float32
+	Value float64
 }
 
 type MarginLeftPercent struct {
-	Value float32
+	Value float64
 }
 
 type MarginUniform struct {
-	Value float32
+	Value float64
 }
 
 type MarginUniformPercent struct {
-	Value float32
+	Value float64
 }
 
 type PaddingTop struct {
-	Value float32
+	Value float64
 }
 
 type PaddingTopPercent struct {
-	Value float32
+	Value float64
 }
 
 type PaddingRight struct {
-	Value float32
+	Value float64
 }
 
 type PaddingRightPercent struct {
-	Value float32
+	Value float64
 }
 
 type PaddingBottom struct {
-	Value float32
+	Value float64
 }
 
 type PaddingBottomPercent struct {
-	Value float32
+	Value float64
 }
 
 type PaddingLeft struct {
-	Value float32
+	Value float64
 }
 
 type PaddingLeftPercent struct {
-	Value float32
+	Value float64
 }
 
 type PaddingUniform struct {
-	Value float32
+	Value float64
 }
 
 type PaddingUniformPercent struct {
-	Value float32
+	Value float64
 }
 
 type BorderWidthLeft struct {
-	Value float32
+	Value float64
 }
 
 type BorderWidthRight struct {
-	Value float32
+	Value float64
 }
 
 type BorderWidthTop struct {
-	Value float32
+	Value float64
 }
 
 type BorderWidthBottom struct {
-	Value float32
+	Value float64
 }
 
 type BorderWidthUniform struct {
-	Value float32
+	Value float64
 }
 
 type AspectRatio struct {
-	Value float32
+	Value float64
 }
 
 type Display struct {
@@ -223,35 +223,35 @@ type Position struct {
 }
 
 type Top struct {
-	Value float32
+	Value float64
 }
 
 type TopPercent struct {
-	Value float32
+	Value float64
 }
 
 type Right struct {
-	Value float32
+	Value float64
 }
 
 type RightPercent struct {
-	Value float32
+	Value float64
 }
 
 type Bottom struct {
-	Value float32
+	Value float64
 }
 
 type BottomPercent struct {
-	Value float32
+	Value float64
 }
 
 type Left struct {
-	Value float32
+	Value float64
 }
 
 type LeftPercent struct {
-	Value float32
+	Value float64
 }
 
 type Children struct {
@@ -404,24 +404,24 @@ func Flexbox(props Component) *flex.Node {
 }
 
 type LayoutInterface struct {
-	Left          float32
-	Right         float32
-	Top           float32
-	Bottom        float32
-	Height        float32
-	Width         float32
-	BorderTop     float32
-	BorderRight   float32
-	BorderBottom  float32
-	BorderLeft    float32
-	PaddingTop    float32
-	PaddingRight  float32
-	PaddingBottom float32
-	PaddingLeft   float32
-	MarginTop     float32
-	MarginRight   float32
-	MarginBottom  float32
-	MarginLeft    float32
+	Left          float64
+	Right         float64
+	Top           float64
+	Bottom        float64
+	Height        float64
+	Width         float64
+	BorderTop     float64
+	BorderRight   float64
+	BorderBottom  float64
+	BorderLeft    float64
+	PaddingTop    float64
+	PaddingRight  float64
+	PaddingBottom float64
+	PaddingLeft   float64
+	MarginTop     float64
+	MarginRight   float64
+	MarginBottom  float64
+	MarginLeft    float64
 	Children      []LayoutInterface
 	Props         []Prop
 }
@@ -456,7 +456,7 @@ func Layout(node *flex.Node) LayoutInterface {
 	}
 }
 
-func NewFlexbox(width, height float32, props Component) LayoutInterface {
+func NewFlexbox(width, height float64, props Component) LayoutInterface {
 	root := Flexbox(props)
 	if width == -1 {
 		width = flex.NAN
