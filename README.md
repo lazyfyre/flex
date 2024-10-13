@@ -14,7 +14,7 @@ The port is finished. The code works and passess all Yoga tests.
 
 The API is awkward by Go standards but it's the best I could do given that I want to stay close to C version.
 
-Logic is currently synced up to  https://github.com/facebook/yoga/commit/f45059e1e696727c1282742b89d2c8bf06345254
+Logic is currently synced up to https://github.com/facebook/yoga/commit/f45059e1e696727c1282742b89d2c8bf06345254
 
 ## How the port was made
 
@@ -22,6 +22,6 @@ You can read a [detailed story](https://blog.kowalczyk.info/article/wN9R/experie
 
 In short:
 
-* manually ported [C code](https://github.com/facebook/yoga/tree/master/yoga) to Go, line-by-line
-* manually ported [tests](https://github.com/facebook/yoga/tree/master/tests) to Go
-* tweak the API from C style to be more Go like. The structure and logic still is very close to C code (this makes porting future C changes easy)
+- manually ported [C code](https://github.com/facebook/yoga/tree/master/yoga) to Go, line-by-line
+- manually ported [tests](https://github.com/facebook/yoga/tree/master/tests) to Go
+- tweak the API from C style to be more Go like. The structure and logic still is very close to C code (this makes porting future C changes easy)
