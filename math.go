@@ -4,20 +4,16 @@ import "math"
 
 // from https://github.com/rkusa/gm/blob/master/math32/bits.go
 
-const (
-	uvnan = 0x7FC00001
-)
-
 var (
-	NAN = math.float64frombits(uvnan)
+	NAN = math.NaN()
 )
 
 // NaN returns an IEEE 754 “not-a-number” value.
-func NaN() float64 { return math.float64frombits(uvnan) }
+func NaN() float64 { return math.NaN() }
 
 // IsNaN reports whether f is an IEEE 754 “not-a-number” value.
 func IsNaN(f float64) (is bool) {
-	return f != f
+	return math.IsNaN(f)
 }
 
 func feq(a, b float64) bool {
